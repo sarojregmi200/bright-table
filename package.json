@@ -1,7 +1,7 @@
 {
-  "name": "rsuite-table",
-  "version": "5.19.1",
-  "description": "A React table component",
+  "name": "bright-table",
+  "version": "1.0.0",
+  "description": "A React table library for bright office system.",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "module": "es/index.js",
@@ -25,7 +25,7 @@
     "prepublishOnly": "npm run build",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
-  "author": "simonguo.2009@gmail.com",
+  "author": "Saroj Regmi",
   "license": "MIT",
   "files": [
     "CHANGELOG.md",
