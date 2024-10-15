@@ -27,17 +27,6 @@
   },
   "author": "Saroj Regmi",
   "license": "MIT",
-  "files": [
-    "CHANGELOG.md",
-    "lib",
-    "src",
-    "es",
-    "dist"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:rsuite/rsuite-table.git"
-  },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
     "@juggle/resize-observer": "^3.3.1",
