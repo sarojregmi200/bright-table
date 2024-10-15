@@ -22,13 +22,13 @@ function buildLess() {
     .pipe(less({ javascriptEnabled: true }))
     .pipe(postcss([require('autoprefixer')]))
     .pipe(sourcemaps.write('./'))
-    .pipe(rename('rsuite-table.css'))
+    .pipe(rename('bright-table.css'))
     .pipe(gulp.dest(`${STYLE_DIST_DIR}`));
 }
 
 function buildCSS() {
   return gulp
-    .src(`${STYLE_DIST_DIR}/rsuite-table.css`)
+    .src(`${STYLE_DIST_DIR}/bright-table.css`)
     .pipe(sourcemaps.init())
     .pipe(postcss())
     .pipe(rename({ suffix: '.min' }))
@@ -41,7 +41,7 @@ function buildLib() {
     gulp
       .src(TS_SOURCE_DIR)
       .pipe(babel(babelrc()))
-      // adds the 'use-client' directive to /lib exported from rsuite-talbe
+      // adds the 'use-client' directive to /lib exported from bright-talbe
       .pipe(insert.prepend(`'use client';\n`))
       .pipe(gulp.dest(CJS_DIR))
   );
@@ -56,7 +56,7 @@ function buildEsm() {
           NODE_ENV: 'esm'
         })
       )
-    ) // adds the 'use-client' directive to /es exported from rsuite-talbe
+    ) // adds the 'use-client' directive to /es exported from bright-talbe
     .pipe(insert.prepend(`'use client';\n`))
     .pipe(gulp.dest(ESM_DIR));
 }

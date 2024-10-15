@@ -51,6 +51,9 @@ import type {
 } from './@types/common';
 import { flattenChildren } from './utils/children';
 
+// importing the default css file.
+import "../dist/css/bright-table.css";
+
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {
     /**
