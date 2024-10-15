@@ -11,13 +11,13 @@ describe('Cell', () => {
     const Title = 'Title';
     const instance = getDOMNode(<Cell>Title</Cell>);
 
-    assert.equal(instance.className, 'rs-cell');
+    assert.equal(instance.className, 'bright-cell');
     assert.equal(instance.style.height, '46px');
     assert.equal(instance.innerText, Title);
   });
 
   it('Should The text be `right` aligned', () => {
-    const instance = getDOMNode(<Cell align="right" />).querySelector('.rs-cell-content');
+    const instance = getDOMNode(<Cell align="right" />).querySelector('.bright-cell-content');
 
     expect(instance).to.have.style('justify-content', 'flex-end');
   });
@@ -29,7 +29,7 @@ describe('Cell', () => {
   });
 
   it('Should be 100 the width', () => {
-    const instance = getDOMNode(<Cell width={100} />).querySelector('.rs-cell-content');
+    const instance = getDOMNode(<Cell width={100} />).querySelector('.bright-cell-content');
     assert.equal(instance.style.width, '100px');
   });
 
@@ -85,7 +85,7 @@ describe('Cell', () => {
         </TableContext.Provider>
       </div>
     );
-    assert.ok(instance.querySelector('.rs-cell-expand-icon'));
+    assert.ok(instance.querySelector('.bright-cell-expand-icon'));
   });
 
   it('Should have a expanded icon', () => {
@@ -128,7 +128,7 @@ describe('Cell', () => {
       </div>
     );
 
-    ReactTestUtils.Simulate.click(instance.querySelector('.rs-cell-expand-icon'));
+    ReactTestUtils.Simulate.click(instance.querySelector('.bright-cell-expand-icon'));
   });
 
   it('Should have a custom className', () => {
@@ -138,8 +138,8 @@ describe('Cell', () => {
 
   it('Should have a custom style', () => {
     const instance = getDOMNode(<Cell style={{ fontSize: 14, padding: 20 }} />);
-    assert.equal(instance.querySelector('.rs-cell-content').style.fontSize, '14px');
-    assert.equal(instance.querySelector('.rs-cell-content').style.padding, '20px');
+    assert.equal(instance.querySelector('.bright-cell-content').style.fontSize, '14px');
+    assert.equal(instance.querySelector('.bright-cell-content').style.padding, '20px');
   });
 
   it('Should render custom children', () => {
@@ -167,10 +167,10 @@ describe('Cell', () => {
       <Cell rowData={{ name: 'foobar' }} dataKey="name" fullText width={100} />
     );
 
-    expect(instance).to.have.class('rs-cell-full-text');
+    expect(instance).to.have.class('bright-cell-full-text');
     expect(instance).to.style('min-width', '100px');
     expect(instance.style.width).to.equal('');
-    expect(instance.querySelector('.rs-cell-content')).to.style('width', '99px');
+    expect(instance.querySelector('.bright-cell-content')).to.style('width', '99px');
   });
 
   it('Should align vertically using verticalAlign', () => {

@@ -38,9 +38,9 @@ describe('ColumnGroupTable', () => {
 
     const table = screen.getByRole('grid');
 
-    const groupHeader = table.querySelector('.rs-table-column-group-header-content');
+    const groupHeader = table.querySelector('.bright-table-column-group-header-content');
     const groupChildren = table.querySelectorAll(
-      '.rs-table-column-group .rs-table-column-group-cell .rs-table-cell-content'
+      '.bright-table-column-group .bright-table-column-group-cell .bright-table-cell-content'
     );
 
     expect(groupHeader).to.have.style('justify-content', 'flex-end');
@@ -60,7 +60,7 @@ describe('ColumnGroupTable', () => {
     expect(groupChildren[2]).to.have.style('align-items', 'center');
 
     const groupBodyChildren = table.querySelectorAll(
-      '.rs-table-body-row-wrapper .rs-table-cell-content'
+      '.bright-table-body-row-wrapper .bright-table-cell-content'
     );
 
     expect(groupBodyChildren).to.have.length(3);
@@ -110,18 +110,18 @@ describe('ColumnGroupTable', () => {
 
     const table = screen.getByRole('grid');
 
-    expect(table.querySelectorAll('.rs-table-column-group')).to.have.length(2);
-    expect(table.querySelectorAll('.rs-table-column-group-header-content')[0]).to.have.text(
+    expect(table.querySelectorAll('.bright-table-column-group')).to.have.length(2);
+    expect(table.querySelectorAll('.bright-table-column-group-header-content')[0]).to.have.text(
       'test 1'
     );
 
-    expect(table.querySelectorAll('.rs-table-column-group-header-content')[1]).to.have.text(
+    expect(table.querySelectorAll('.bright-table-column-group-header-content')[1]).to.have.text(
       'test 2'
     );
 
     expect(
       table.querySelectorAll(
-        '.rs-table-column-group .rs-table-cell-header .rs-table-cell-header-icon-sort'
+        '.bright-table-column-group .bright-table-cell-header .bright-table-cell-header-icon-sort'
       )
     ).to.have.length(4);
   });

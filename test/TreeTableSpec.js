@@ -21,7 +21,7 @@ describe('TreeTable', () => {
     );
 
     const table = ref.current.root;
-    const cell = table.querySelectorAll('.rs-table-cell')[1];
+    const cell = table.querySelectorAll('.bright-table-cell')[1];
 
     expect(cell).to.text('South Georgia and the South Sandwich Islands');
 
@@ -119,7 +119,7 @@ describe('TreeTable', () => {
     expect(screen.getAllByRole('gridcell')).to.be.length(3);
 
     screen.getAllByRole('gridcell').forEach((cell, index) => {
-      expect(cell.querySelector('.rs-table-cell-content').style.paddingLeft).to.equal(
+      expect(cell.querySelector('.bright-table-cell-content').style.paddingLeft).to.equal(
         `${index * 30 + 10}px`
       );
     });
@@ -145,13 +145,13 @@ describe('TreeTable', () => {
     );
 
     const table = ref.current.root;
-    const button = table.querySelector('.rs-table-cell-expand-wrapper');
+    const button = table.querySelector('.bright-table-cell-expand-wrapper');
 
-    expect(table.querySelectorAll('.rs-table-cell')[2]).to.be.not.exist;
+    expect(table.querySelectorAll('.bright-table-cell')[2]).to.be.not.exist;
 
     fireEvent.click(button);
 
-    const cell = table.querySelectorAll('.rs-table-cell')[2];
+    const cell = table.querySelectorAll('.bright-table-cell')[2];
 
     expect(cell).to.text('South Georgia and the South Sandwich Islands');
 
@@ -193,7 +193,8 @@ describe('TreeTable', () => {
     expect(
       screen
         .getByRole('treegrid')
-        .querySelector('.rs-table-body-row-wrapper .rs-table-cell-expand-wrapper').parentNode
+        .querySelector('.bright-table-body-row-wrapper .bright-table-cell-expand-wrapper')
+        .parentNode
     ).to.be.text('b');
   });
 
@@ -288,14 +289,14 @@ describe('TreeTable', () => {
 
     const table = ref.current.table;
 
-    expect(table.querySelectorAll('.rs-table-row')).to.be.length(3);
+    expect(table.querySelectorAll('.bright-table-row')).to.be.length(3);
 
     act(() => {
       ref.current.setTree(false);
     });
 
-    expect(table.querySelectorAll('.rs-table-row')).to.be.length(1);
-    expect(getHeight(table.querySelector('.rs-table-row'))).to.be.equal(46);
+    expect(table.querySelectorAll('.bright-table-row')).to.be.length(1);
+    expect(getHeight(table.querySelector('.bright-table-row'))).to.be.equal(46);
   });
 
   it('Should show a vertical scroll bar when the tree is expanded', () => {
@@ -346,16 +347,16 @@ describe('TreeTable', () => {
     );
 
     const table = screen.getByRole('treegrid');
-    const expand = table.querySelector('.rs-table-cell-expand-icon');
+    const expand = table.querySelector('.bright-table-cell-expand-icon');
 
     // Before the Tree expands, it displays 1 row without vertical scroll bar.
-    expect(table.querySelectorAll('.rs-table-row')).to.be.length(1);
-    expect(table.querySelector('.rs-table-scrollbar-vertical')).to.be.not.exist;
+    expect(table.querySelectorAll('.bright-table-row')).to.be.length(1);
+    expect(table.querySelector('.bright-table-scrollbar-vertical')).to.be.not.exist;
 
     fireEvent.click(expand);
 
     // After the Tree is expanded, 10 rows are displayed and a vertical scroll bar is displayed at the same time.
-    expect(table.querySelectorAll('.rs-table-row')).to.be.length(10);
-    expect(table.querySelector('.rs-table-scrollbar-vertical')).to.be.exist;
+    expect(table.querySelectorAll('.bright-table-row')).to.be.length(10);
+    expect(table.querySelector('.bright-table-scrollbar-vertical')).to.be.exist;
   });
 });

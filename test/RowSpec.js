@@ -6,7 +6,7 @@ describe('Row', () => {
   it('Should output a row', () => {
     const Title = 'Title';
     const instanceDom = getDOMNode(<Row>Title</Row>);
-    assert.include(instanceDom.className, 'rs-row');
+    assert.include(instanceDom.className, 'bright-row');
     assert.equal(instanceDom.style.height, '46px');
     assert.equal(instanceDom.innerText, Title);
   });

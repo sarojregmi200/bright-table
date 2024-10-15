@@ -14,7 +14,7 @@ describe('ColumnGroup', () => {
   it('Should output a ColumnGroup', () => {
     const instance = getDOMNode(<ColumnGroup />);
 
-    assert.equal(instance.className, 'rs-column-group');
+    assert.equal(instance.className, 'bright-column-group');
   });
 
   it('Should output a header', () => {
@@ -30,7 +30,7 @@ describe('ColumnGroup', () => {
       </ColumnGroup>
     );
 
-    assert.equal(instance.querySelectorAll('.rs-column-group-cell-content').length, 2);
+    assert.equal(instance.querySelectorAll('.bright-column-group-cell-content').length, 2);
   });
 
   it('Should set height 10 for header', () => {
@@ -41,9 +41,12 @@ describe('ColumnGroup', () => {
       </ColumnGroup>
     );
 
-    assert.equal(instance.querySelector('.rs-column-group-header').style.height, '10px');
-    assert.equal(instance.querySelector('.rs-column-group-header-content').style.height, '10px');
-    assert.equal(instance.querySelector('.rs-column-group-cell').style.height, '10px');
+    assert.equal(instance.querySelector('.bright-column-group-header').style.height, '10px');
+    assert.equal(
+      instance.querySelector('.bright-column-group-header-content').style.height,
+      '10px'
+    );
+    assert.equal(instance.querySelector('.bright-column-group-cell').style.height, '10px');
   });
 
   it('Should render height via groupHeaderHeight', () => {
@@ -54,9 +57,9 @@ describe('ColumnGroup', () => {
       </ColumnGroup>
     );
 
-    assert.equal(instance.querySelector('.rs-column-group-header').style.height, '5px');
-    assert.equal(instance.querySelector('.rs-column-group-header-content').style.height, '5px');
-    assert.equal(instance.querySelector('.rs-column-group-cell').style.height, '15px');
+    assert.equal(instance.querySelector('.bright-column-group-header').style.height, '5px');
+    assert.equal(instance.querySelector('.bright-column-group-header-content').style.height, '5px');
+    assert.equal(instance.querySelector('.bright-column-group-cell').style.height, '15px');
   });
 
   it('Should be centered vertically', () => {
@@ -67,7 +70,7 @@ describe('ColumnGroup', () => {
       </ColumnGroup>
     );
 
-    expect(instance.querySelector('.rs-column-group-header-content')).to.have.style(
+    expect(instance.querySelector('.bright-column-group-header-content')).to.have.style(
       'align-items',
       'center'
     );
@@ -81,7 +84,7 @@ describe('ColumnGroup', () => {
       </ColumnGroup>
     );
 
-    assert.equal(instance.className, 'rs-my');
-    assert.ok(instance.querySelector('.rs-my-header'));
+    assert.equal(instance.className, 'bright-my');
+    assert.ok(instance.querySelector('.bright-my-header'));
   });
 });

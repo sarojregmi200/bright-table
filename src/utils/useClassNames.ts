@@ -39,14 +39,14 @@ export interface ClassDictionary {
  *  - rootPrefix
  */
 function useClassNames(str: string, controlled?: boolean): ClassNameUtils {
-    const { classPrefix: contextClassPrefix = 'bright-table' } = useContext(TableContext) || {};
+    const { classPrefix: contextClassPrefix = 'bright' } = useContext(TableContext) || {};
     const componentName = controlled ? str : addPrefix(contextClassPrefix, str);
 
     /**
      * @example
      *
      * if str = 'button':
-     * prefix('red', { active: true }) => 'rs-button-red rs-button-active'
+     * prefix('red', { active: true }) => 'bright-button-red bright-button-active'
      */
     const prefix = useCallback(
         (...classes: ClassValue[]) => {
@@ -65,7 +65,7 @@ function useClassNames(str: string, controlled?: boolean): ClassNameUtils {
      * @example
      *
      * if str = 'button':
-     * withClassPrefix('red', { active: true }) => 'rs-button rs-button-red rs-button-active'
+     * withClassPrefix('red', { active: true }) => 'bright-button bright-button-red bright-button-active'
      */
     const withClassPrefix = useCallback(
         (...classes: ClassValue[]) => {
@@ -77,8 +77,8 @@ function useClassNames(str: string, controlled?: boolean): ClassNameUtils {
 
     /**
      * @example
-     * rootPrefix('btn') => 'rs-btn'
-     * rootPrefix('btn', { active: true }) => 'rs-btn rs-active'
+     * rootPrefix('btn') => 'bright-btn'
+     * rootPrefix('btn', { active: true }) => 'bright-btn bright-active'
      */
     const rootPrefix = (...classes: ClassValue[]) => {
         const mergeClasses = classes.length

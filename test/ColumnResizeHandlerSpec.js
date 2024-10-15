@@ -8,7 +8,7 @@ const handlerLeft = -2;
 describe('ColumnResizeHandler', () => {
   it('Should output a handler', () => {
     const instance = getDOMNode(<ColumnResizeHandler />);
-    assert.include(instance.className, 'rs-column-resize-spanner');
+    assert.include(instance.className, 'bright-column-resize-spanner');
   });
 
   it('Should be 100 the `height` ', () => {

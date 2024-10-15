@@ -7,7 +7,7 @@ import Scrollbar from '../src/Scrollbar';
 describe('Scrollbar', () => {
   it('Should output a scrollbar', () => {
     const instance = getDOMNode(<Scrollbar />);
-    assert.include(instance.className, 'rs-scrollbar');
+    assert.include(instance.className, 'bright-scrollbar');
   });
 
   it('Should be vertical', () => {

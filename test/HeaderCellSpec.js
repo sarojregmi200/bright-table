@@ -6,7 +6,7 @@ import HeaderCell from '../src/HeaderCell';
 describe('HeaderCell', () => {
   it('Should output a header', () => {
     const instance = getDOMNode(<HeaderCell>test</HeaderCell>);
-    assert.equal(instance.className, 'rs-cell-header');
+    assert.equal(instance.className, 'bright-cell-header');
   });
 
   it('Should output default sort icon', () => {
@@ -15,7 +15,7 @@ describe('HeaderCell', () => {
         test
       </HeaderCell>
     );
-    assert.isNotNull(instance.querySelector('.rs-cell-header-icon-sort'));
+    assert.isNotNull(instance.querySelector('.bright-cell-header-icon-sort'));
   });
 
   it('Should output default sort desc icon', () => {
@@ -24,7 +24,7 @@ describe('HeaderCell', () => {
         test
       </HeaderCell>
     );
-    assert.isNotNull(instance.querySelector('.rs-cell-header-icon-sort-desc'));
+    assert.isNotNull(instance.querySelector('.bright-cell-header-icon-sort-desc'));
   });
 
   it('Should call `onSortColumn` callback', done => {
@@ -40,7 +40,7 @@ describe('HeaderCell', () => {
       </HeaderCell>
     );
 
-    ReactTestUtils.Simulate.click(instance.querySelector('.rs-cell'));
+    ReactTestUtils.Simulate.click(instance.querySelector('.bright-cell'));
   });
 
   it('Should call `onColumnResizeStart` callback', done => {
@@ -54,7 +54,7 @@ describe('HeaderCell', () => {
       </HeaderCell>
     );
 
-    ReactTestUtils.Simulate.mouseDown(instance.querySelector('.rs-column-resize-spanner'));
+    ReactTestUtils.Simulate.mouseDown(instance.querySelector('.bright-column-resize-spanner'));
   });
 
   it('Should render custom sort icons', () => {
@@ -73,14 +73,14 @@ describe('HeaderCell', () => {
       </HeaderCell>
     );
 
-    assert.equal(instance1.querySelector('.rs-cell-header-sort-wrapper').textContent, 3);
+    assert.equal(instance1.querySelector('.bright-cell-header-sort-wrapper').textContent, 3);
 
     const instance2 = getDOMNode(
       <HeaderCell sortable dataKey="name" renderSortIcon={renderSortIcon} sortType="asc">
         test
       </HeaderCell>
     );
-    assert.equal(instance2.querySelector('.rs-cell-header-sort-wrapper').textContent, 3);
+    assert.equal(instance2.querySelector('.bright-cell-header-sort-wrapper').textContent, 3);
 
     const instance3 = getDOMNode(
       <HeaderCell
@@ -93,7 +93,7 @@ describe('HeaderCell', () => {
         test
       </HeaderCell>
     );
-    assert.equal(instance3.querySelector('.rs-cell-header-sort-wrapper').textContent, 1);
+    assert.equal(instance3.querySelector('.bright-cell-header-sort-wrapper').textContent, 1);
 
     const instance4 = getDOMNode(
       <HeaderCell
@@ -106,6 +106,6 @@ describe('HeaderCell', () => {
         test
       </HeaderCell>
     );
-    assert.equal(instance4.querySelector('.rs-cell-header-sort-wrapper').textContent, 2);
+    assert.equal(instance4.querySelector('.bright-cell-header-sort-wrapper').textContent, 2);
   });
 });

@@ -13,7 +13,7 @@ import '../src/less/index.less';
 describe('Table', () => {
   it('Should output a table', () => {
     const instance = getDOMNode(<Table>test</Table>);
-    expect(instance).to.have.class('rs-table');
+    expect(instance).to.have.class('bright-table');
   });
 
   it('Should output 2 cell', () => {
@@ -29,7 +29,7 @@ describe('Table', () => {
         </Column>
       </Table>
     );
-    expect(instance.querySelectorAll('.rs-table-cell')).to.be.length(2);
+    expect(instance.querySelectorAll('.bright-table-cell')).to.be.length(2);
   });
 
   it('Should accept render prop', () => {
@@ -76,7 +76,7 @@ describe('Table', () => {
       </Table>
     );
 
-    expect(instance.querySelectorAll('.rs-table-scrollbar-handle')).to.be.length(0);
+    expect(instance.querySelectorAll('.bright-table-scrollbar-handle')).to.be.length(0);
   });
 
   it('Should be loading', () => {
@@ -89,8 +89,8 @@ describe('Table', () => {
       </Table>
     );
 
-    expect(instance).to.have.class('rs-table-loading');
-    expect(instance.querySelectorAll('.rs-table-loader')).to.be.length(1);
+    expect(instance).to.have.class('bright-table-loading');
+    expect(instance.querySelectorAll('.bright-table-loader')).to.be.length(1);
     expect(instance.getAttribute('aria-busy')).to.equal('true');
   });
 
@@ -158,7 +158,7 @@ describe('Table', () => {
       </Table>
     );
 
-    expect(instance).to.have.class('rs-table-bordered');
+    expect(instance).to.have.class('bright-table-bordered');
   });
 
   it('Should be bordered for cell', () => {
@@ -171,7 +171,7 @@ describe('Table', () => {
       </Table>
     );
 
-    expect(instance).to.have.class('rs-table-cell-bordered');
+    expect(instance).to.have.class('bright-table-cell-bordered');
   });
 
   it('Should render loader dom element when set `loadAnimation`', () => {
@@ -184,7 +184,7 @@ describe('Table', () => {
       </Table>
     );
 
-    expect(instance.querySelectorAll('.rs-table-loader')).to.be.exist;
+    expect(instance.querySelectorAll('.bright-table-loader')).to.be.exist;
   });
 
   it('Should be wordWrap', async () => {
@@ -201,11 +201,11 @@ describe('Table', () => {
     );
 
     const table = ref.current.root;
-    const cell = table.querySelectorAll('.rs-table-cell')[1];
-    const cellContent = table.querySelectorAll('.rs-table-cell-content')[1];
+    const cell = table.querySelectorAll('.bright-table-cell')[1];
+    const cellContent = table.querySelectorAll('.bright-table-cell-content')[1];
 
     expect(cellContent.style.wordBreak).to.equal('break-all');
-    expect(ref.current.root).to.have.class('rs-table-word-wrap');
+    expect(ref.current.root).to.have.class('bright-table-word-wrap');
     expect(cell.innerText).to.equal('South Georgia and the South Sandwich Islands');
 
     await waitFor(() => {
@@ -227,7 +227,7 @@ describe('Table', () => {
       </Table>
     );
 
-    const cellContent = ref.current.querySelector('.rs-table-cell-content');
+    const cellContent = ref.current.querySelector('.bright-table-cell-content');
 
     expect(cellContent.style.wordBreak).to.equal('break-all');
   });
@@ -246,7 +246,7 @@ describe('Table', () => {
       </Table>
     );
 
-    const cellContent = ref.current.querySelector('.rs-table-cell-content');
+    const cellContent = ref.current.querySelector('.bright-table-cell-content');
 
     expect(cellContent.style.wordBreak).to.equal('break-word');
   });
@@ -265,7 +265,7 @@ describe('Table', () => {
       </Table>
     );
 
-    const cellContent = ref.current.querySelector('.rs-table-cell-content');
+    const cellContent = ref.current.querySelector('.bright-table-cell-content');
 
     expect(cellContent.style.wordBreak).to.equal('keep-all');
   });
@@ -315,7 +315,7 @@ describe('Table', () => {
     const width = Math.floor((tableWidth / contextWidth) * tableWidth);
 
     const scrollbarHandleWidth = Math.floor(
-      getWidth(instance.querySelector('.rs-table-scrollbar-handle'))
+      getWidth(instance.querySelector('.bright-table-scrollbar-handle'))
     );
 
     expect(width).to.equal(scrollbarHandleWidth);
@@ -355,7 +355,7 @@ describe('Table', () => {
       </Table>
     );
 
-    fireEvent.wheel(instance.querySelector('.rs-table-body-row-wrapper'));
+    fireEvent.wheel(instance.querySelector('.bright-table-body-row-wrapper'));
 
     expect(onWheelSpy).to.have.been.calledOnce;
   });
@@ -393,7 +393,7 @@ describe('Table', () => {
         </Column>
       </Table>
     );
-    assert.equal(instance.querySelectorAll('.rs-table-header-row-wrapper').length, 0);
+    assert.equal(instance.querySelectorAll('.bright-table-header-row-wrapper').length, 0);
   });
 
   it('Should hava row className', () => {
@@ -422,7 +422,7 @@ describe('Table', () => {
         </Column>
       </Table>
     );
-    assert.equal(instance.querySelectorAll('.rs-table-row.custom-row').length, 3);
+    assert.equal(instance.querySelectorAll('.bright-table-row.custom-row').length, 3);
   });
 
   it('Should hava row className by rowClassName()', () => {
@@ -462,9 +462,9 @@ describe('Table', () => {
     );
 
     expect(rowClassNameSpy).to.have.been.called;
-    expect(instance.querySelector('.rs-table-row.header-row')).to.have.text('IDName');
-    expect(instance.querySelector('.rs-table-row.custom-row')).to.have.text('1a');
-    expect(instance.querySelector('.rs-table-row.default-row')).to.have.text('2b');
+    expect(instance.querySelector('.bright-table-row.header-row')).to.have.text('IDName');
+    expect(instance.querySelector('.bright-table-row.custom-row')).to.have.text('1a');
+    expect(instance.querySelector('.bright-table-row.default-row')).to.have.text('2b');
   });
 
   it('Should be fixed column', () => {
@@ -497,8 +497,8 @@ describe('Table', () => {
 
     const table = ref.current.root;
 
-    assert.equal(table.querySelectorAll('.rs-table-cell-group').length, 2);
-    assert.equal(table.querySelectorAll('.rs-table-cell-group-fixed-left').length, 1);
+    assert.equal(table.querySelectorAll('.bright-table-cell-group').length, 2);
+    assert.equal(table.querySelectorAll('.bright-table-cell-group-fixed-left').length, 1);
   });
 
   // https://github.com/rsuite/rsuite/issues/1307
@@ -537,8 +537,8 @@ describe('Table', () => {
 
     const table = ref.current.root;
 
-    assert.equal(table.querySelectorAll('.rs-table-cell-group').length, 2);
-    assert.equal(table.querySelectorAll('.rs-table-cell-group-fixed-left').length, 1);
+    assert.equal(table.querySelectorAll('.bright-table-cell-group').length, 2);
+    assert.equal(table.querySelectorAll('.bright-table-cell-group-fixed-left').length, 1);
   });
 
   it('Should replace all classPrefix', () => {
@@ -586,7 +586,7 @@ describe('Table', () => {
         </Column>
       </Table>
     );
-    const body = instance.querySelector('.rs-table-body-row-wrapper');
+    const body = instance.querySelector('.bright-table-body-row-wrapper');
     body.dispatchEvent(new WheelEvent('wheel', { deltaY: 10, deltaX: 2 }));
 
     await waitFor(() => {
@@ -612,7 +612,7 @@ describe('Table', () => {
         </Column>
       </Table>
     );
-    const body = instance.querySelector('.rs-table-body-row-wrapper');
+    const body = instance.querySelector('.bright-table-body-row-wrapper');
     body.dispatchEvent(new WheelEvent('wheel', { deltaY: 10, deltaX: 2 }));
 
     await waitFor(() => {
@@ -782,7 +782,7 @@ describe('Table', () => {
       );
     });
     const instance = getDOMNode(<App />);
-    const body = instance.querySelector('.rs-table-body-row-wrapper');
+    const body = instance.querySelector('.bright-table-body-row-wrapper');
 
     body.dispatchEvent(new WheelEvent('wheel', { deltaY: 10 }));
   });
@@ -837,11 +837,11 @@ describe('Table', () => {
 
     const rows = screen
       .getAllByRole('row')
-      .filter(row => !row.classList.contains('rs-table-row-header'));
+      .filter(row => !row.classList.contains('bright-table-row-header'));
 
     const rowspan = screen
       .getAllByRole('row')
-      .filter(row => row.classList.contains('rs-table-row-rowspan'));
+      .filter(row => row.classList.contains('bright-table-row-rowspan'));
 
     expect(rowspanCells[0]).to.style('height', `${40 * 2}px`);
     expect(rowspanCells[1]).to.style('height', `${40 * 3}px`);
@@ -849,13 +849,13 @@ describe('Table', () => {
     expect(rowspan).to.have.length(2);
 
     // Check if merged cells are removed.
-    expect(rows[0].querySelectorAll('.rs-table-cell')).to.have.length(2);
-    expect(rows[1].querySelectorAll('.rs-table-cell')).to.have.length(1);
-    expect(rows[2].querySelectorAll('.rs-table-cell')).to.have.length(2);
-    expect(rows[3].querySelectorAll('.rs-table-cell')).to.have.length(1);
-    expect(rows[4].querySelectorAll('.rs-table-cell')).to.have.length(1);
+    expect(rows[0].querySelectorAll('.bright-table-cell')).to.have.length(2);
+    expect(rows[1].querySelectorAll('.bright-table-cell')).to.have.length(1);
+    expect(rows[2].querySelectorAll('.bright-table-cell')).to.have.length(2);
+    expect(rows[3].querySelectorAll('.bright-table-cell')).to.have.length(1);
+    expect(rows[4].querySelectorAll('.bright-table-cell')).to.have.length(1);
 
-    expect(screen.getByRole('grid')).to.have.class('rs-table-has-rowspan');
+    expect(screen.getByRole('grid')).to.have.class('bright-table-has-rowspan');
   });
 
   // fix https://github.com/rsuite/rsuite/issues/2051
@@ -898,7 +898,7 @@ describe('Table', () => {
 
     const { container } = render(<App ref={appRef} />);
 
-    const body = container.querySelector('.rs-table-body-row-wrapper');
+    const body = container.querySelector('.bright-table-body-row-wrapper');
 
     act(() => {
       body.dispatchEvent(new WheelEvent('wheel', { deltaY: 10 }));
@@ -981,7 +981,7 @@ describe('Table', () => {
       );
     });
 
-    const scrollbar = ref.current.querySelector('.rs-table-scrollbar-horizontal');
+    const scrollbar = ref.current.querySelector('.bright-table-scrollbar-horizontal');
 
     expect(scrollbar.style.width).to.equal('200px');
 
@@ -999,7 +999,7 @@ describe('Table', () => {
       { id: 1, firstName: 'firstName', lastName: 'lastName', companyName: 'companyName' }
     ];
     const instance = getDOMNode(
-      <Table classPrefix="rs-table" height={400} data={data}>
+      <Table classPrefix="bright-table" height={400} data={data}>
         <Column width={70} align="center" verticalAlign="middle" sortable>
           <HeaderCell>Id</HeaderCell>
           <Cell dataKey="id" />
@@ -1068,9 +1068,9 @@ describe('Table', () => {
       </Table>
     );
 
-    const body = instance.querySelector('.rs-table-body-row-wrapper');
+    const body = instance.querySelector('.bright-table-body-row-wrapper');
 
-    assert.equal(body.querySelectorAll('.rs-table-cell-content').length, 9);
+    assert.equal(body.querySelectorAll('.bright-table-cell-content').length, 9);
   });
 
   it('Should render a custom row', () => {
@@ -1101,7 +1101,7 @@ describe('Table', () => {
         </Column>
       </Table>
     );
-    assert.equal(instance.querySelectorAll('.rs-table-row .custom-row').length, 1);
+    assert.equal(instance.querySelectorAll('.bright-table-row .custom-row').length, 1);
   });
 
   it('Should call shouldUpdateScroll after the height of the table container is changed', async () => {
@@ -1170,7 +1170,7 @@ describe('Table', () => {
         </Column>
       </Table>
     );
-    expect(instance.querySelector('.rs-table-scrollbar-vertical')).to.not.exist;
+    expect(instance.querySelector('.bright-table-scrollbar-vertical')).to.not.exist;
   });
 
   it('Should throw error for rowData check', () => {
@@ -1216,8 +1216,8 @@ describe('Table', () => {
       </Table>
     );
 
-    expect(instance.querySelector('.rs-table-cell-header-sortable')).to.exist;
-    expect(instance.querySelector('.rs-table-cell-full-text')).to.not.exist;
+    expect(instance.querySelector('.bright-table-cell-header-sortable')).to.exist;
+    expect(instance.querySelector('.bright-table-cell-full-text')).to.not.exist;
   });
 
   it('Should align cell content using Flexbox layout', () => {
@@ -1299,9 +1299,9 @@ describe('Table', () => {
       </Table>
     );
 
-    const headerCell = instance.querySelector('.rs-table-cell-header');
+    const headerCell = instance.querySelector('.bright-table-cell-header');
     expect(headerCell).to.exist;
-    expect(instance.querySelector('.rs-table-column-resize-spanner')).to.exist;
+    expect(instance.querySelector('.bright-table-column-resize-spanner')).to.exist;
 
     const width = headerCell.getBoundingClientRect().width;
     expect(width).not.equal(100);

@@ -7,7 +7,7 @@ describe('CellGroup', () => {
   it('Should output a cell group', () => {
     const Title = 'Title';
     const instance = getDOMNode(<CellGroup>Title</CellGroup>);
-    assert.include(instance.className, 'rs-cell-group');
+    assert.include(instance.className, 'bright-cell-group');
     assert.equal(instance.style.transform, 'translate3d(0px, 0px, 0px)');
     assert.equal(instance.innerText, Title);
   });

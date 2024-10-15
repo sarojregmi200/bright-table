@@ -69,7 +69,7 @@ describe('SortTable', () => {
       );
 
       expect(
-        screen.getByRole('grid').querySelector('.rs-table-cell-header-sort-wrapper')
+        screen.getByRole('grid').querySelector('.bright-table-cell-header-sort-wrapper')
       ).to.be.text('2');
     });
 
@@ -86,7 +86,7 @@ describe('SortTable', () => {
       );
 
       expect(
-        screen.getByRole('grid').querySelector('.rs-table-cell-header-sort-wrapper')
+        screen.getByRole('grid').querySelector('.bright-table-cell-header-sort-wrapper')
       ).to.be.text('1');
     });
 
@@ -103,7 +103,7 @@ describe('SortTable', () => {
       );
 
       expect(
-        screen.getByRole('grid').querySelector('.rs-table-cell-header-sort-wrapper')
+        screen.getByRole('grid').querySelector('.bright-table-cell-header-sort-wrapper')
       ).to.be.text('3');
     });
   });

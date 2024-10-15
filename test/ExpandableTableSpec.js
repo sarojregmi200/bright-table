@@ -33,8 +33,8 @@ describe('ExpandableTable', () => {
       </Table>
     );
 
-    expect(innerTable.current.root).to.have.class('rs-table');
-    expect(innerTable.current.root).to.have.class('rs-table-hover');
+    expect(innerTable.current.root).to.have.class('bright-table');
+    expect(innerTable.current.root).to.have.class('bright-table-hover');
   });
 
   it('Should set the height of rows and cells separately', () => {
@@ -94,7 +94,7 @@ describe('ExpandableTable', () => {
     );
     const rowExpandedHeights = [];
     container
-      .querySelectorAll('.rs-table-row-expanded')
+      .querySelectorAll('.bright-table-row-expanded')
       .forEach(el => rowExpandedHeights.push(el.offsetHeight));
 
     expect(rowExpandedHeights).to.deep.equal([100, 200, 300]);
