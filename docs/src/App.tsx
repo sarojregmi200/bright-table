@@ -91,11 +91,16 @@ function App() {
                 <li>
                     Tailwind support.
                 </li>
+
+                <li>
+                    Context menu support.
+                </li>
             </span>
 
             <Table
-                height={400}
+                bordered
                 data={data}
+                minHeight={100}
                 onRowClick={rowData => {
                     console.log(rowData);
                 }}
@@ -134,9 +139,9 @@ function App() {
                     <HeaderCell>Email</HeaderCell>
                     <Cell dataKey="email" />
                 </Column>
-                <Column width={80} fixed="right">
-                    <HeaderCell>...</HeaderCell>
 
+                <Column>
+                    <HeaderCell>...</HeaderCell>
                     <Cell style={{ padding: '6px' }}>
                         {rowData => (
                             <button onClick={() => alert(`id:${rowData.id}`)}>
@@ -145,8 +150,9 @@ function App() {
                         )}
                     </Cell>
                 </Column>
+
             </Table>
-        </div >
+        </div>
     )
 }
 

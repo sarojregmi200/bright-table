@@ -233,6 +233,12 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      **/
     bodyRef?: (ref: HTMLElement) => void;
 
+    /** 
+     * Default pagination can also be customized by passing a Pagination as a child. 
+     * @default false
+    * */
+    defaultPagination?: boolean;
+
     children?:
     | React.ReactNode
     | React.ReactNode[]
@@ -265,6 +271,7 @@ const getChildrenProps = {
 
 const Table = React.forwardRef(
     <Row extends RowDataType, Key extends RowKeyType>(props: TableProps<Row, Key>, ref) => {
+
         const {
             affixHeader,
             children: getChildren,
@@ -321,6 +328,9 @@ const Table = React.forwardRef(
             onTouchStart,
             onTouchMove,
             onTouchEnd,
+
+            // newly added features
+            defaultPagination = false,
             ...rest
         } = props;
 
@@ -1141,6 +1151,10 @@ const Table = React.forwardRef(
             [classPrefix, hasCustomTreeCol, isTree, rtl]
         );
 
+        const renderDefaultPagination = () => {
+            return <div> pagination </div>
+        }
+
         return (
             <TableContext.Provider value={contextValue}>
                 <div
@@ -1159,6 +1173,9 @@ const Table = React.forwardRef(
                 >
                     {showHeader && renderTableHeader(headerCells, rowWidth)}
                     {children && renderTableBody(bodyCells, rowWidth)}
+
+                    {/* Newly added features */}
+                    {defaultPagination && renderDefaultPagination()}
                     {showHeader && (
                         <MouseArea
                             ref={mouseAreaRef}
