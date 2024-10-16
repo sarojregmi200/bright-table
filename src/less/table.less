@@ -1,7 +1,9 @@
 &-table {
   position: relative;
+  font-size: 14px;
+  font-weight:300;
   overflow: hidden;
-  border: 1px solid @border-color;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
 
   &-column-resizing {
@@ -18,23 +20,24 @@
   }
 
   &-hover &-body-row-wrapper &-row:hover {
-    background: @row-hover-color;
+    background: var(--row-hover-color);
   }
 
   &-hover &-body-row-wrapper &-row:hover &-cell-group {
-    background: @row-hover-color;
+    background: var(--row-hover-color);
   }
 
   &-hover &-body-row-wrapper &-row:hover &-cell {
-    background: @row-hover-color;
+    background: var(--row-hover-color);
   }
 
   &-row-header {
-    background: @head-background;
-    border-bottom: 1px solid @border-color;
+    background: var(--head-background);
+    font-weight: 400;
+    border-bottom: 1px solid var(--border-color);
   }
   &-row-header &-cell {
-    background: @head-background;
+    background: var(--head-background);
   }
 
   &-row-header &-cell-group-shadow {
@@ -81,7 +84,7 @@
     overflow: hidden;
     position: absolute;
     white-space: normal;
-    background: @body-background;
+    background: var(--body-background);
     transition: none;
     box-sizing: border-box;
 
@@ -138,19 +141,19 @@
     cursor: ew-resize !important;
     outline: none;
     &:hover {
-      background: @resize-mouse-color;
+      background: var(--resize-mouse-color);
     }
   }
   &-cell-group {
     &-fixed-left {
       position: absolute;
       z-index: 4;
-      background: @body-background;
+      background: var(--body-background);
     }
     &-fixed-right {
       position: absolute;
       z-index: 4;
-      background: @body-background;
+      background: var(--body-background);
     }
     &-left-shadow {
       .box-shadow(3px, 0px, 5px, rgba(9, 9, 9, 0.08));
@@ -163,7 +166,7 @@
   }
   &-mouse-area {
     display: none;
-    background: @resize-mouse-color;
+    background: var(--resize-mouse-color);
     left: -1px;
     top: 0;
     position: absolute;

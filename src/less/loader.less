@@ -22,14 +22,14 @@
   }
 
   &::before {
-    border: @loader-spin-ring-wide solid @loader-spin-ring-color;
+    border: var(--loader-spin-ring-wide) solid var(--loader-spin-ring-color);
   }
 
   &::after {
-    border-width: @loader-spin-ring-wide;
+    border-width: var(--loader-spin-ring-wide);
     border-style: solid;
-    border-color: @loader-spin-ring-active-color transparent transparent;
-    animation: loaderSpin @loader-duration-normal infinite linear;
+    border-color: var(--loader-spin-ring-active-color) transparent transparent;
+    animation: loaderSpin var(--loader-duration-normal) infinite linear;
   }
 }
 
