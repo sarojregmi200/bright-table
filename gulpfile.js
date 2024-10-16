@@ -83,7 +83,7 @@ function clean(done) {
 
 function watchFiles() {
   gulp.watch(
-    'src/*',
+    'src/**/*',
     gulp.series(
       clean,
       gulp.parallel(buildLib, buildEsm, gulp.series(buildLess, buildCSS)),
