@@ -1,13 +1,12 @@
 &-table {
   position: relative;
   overflow: hidden;
+  border: 1px solid @border-color;
+  border-radius: 5px;
+
   &-column-resizing {
     cursor: ew-resize;
     .user-select();
-  }
-
-  &-bordered {
-    border: 1px solid @border-color;
   }
 
   &-row {
@@ -32,6 +31,7 @@
 
   &-row-header {
     background: @head-background;
+    border-bottom: 1px solid @border-color;
   }
   &-row-header &-cell {
     background: @head-background;
@@ -77,7 +77,6 @@
 
   &-cell {
     height: 36px;
-    border-bottom: 1px solid #eee;
     display: block;
     overflow: hidden;
     position: absolute;

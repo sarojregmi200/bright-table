@@ -52,7 +52,7 @@ import type {
 import { flattenChildren } from './utils/children';
 
 // importing the default css file.
-import "../dist/css/bright-table.css";
+import "./less/index.less";
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {
@@ -74,8 +74,17 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     /** Affix the table horizontal scrollbar to the specified position on the page */
     affixHorizontalScrollbar?: boolean | number;
 
-    /** Show the border of the table */
+    /** Show the border of the table 
+     *  @deprecated 
+     *
+     *  now defaults to border.
+     */
     bordered?: boolean;
+
+    /** specifies if the page is in darkmode or not.
+     * @default false
+     */
+    isDarkMode?: boolean;
 
     /** Display the borders of table cells */
     cellBordered?: boolean;
@@ -332,6 +341,7 @@ const Table = React.forwardRef(
             defaultPagination = false,
             ...rest
         } = props;
+
 
         const children = useMemo(
             () => flattenChildren(isFunction(getChildren) ? getChildren(getChildrenProps) : getChildren),
@@ -1195,7 +1205,6 @@ Table.propTypes = {
     fillHeight: PropTypes.bool,
     affixHeader: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
     affixHorizontalScrollbar: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
-    bordered: PropTypes.bool,
     className: PropTypes.string,
     classPrefix: PropTypes.string,
     children: PropTypes.any,

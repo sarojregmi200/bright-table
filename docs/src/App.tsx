@@ -98,9 +98,8 @@ function App() {
             </span>
 
             <Table
-                bordered
                 data={data}
-                minHeight={100}
+                minHeight={500}
                 onRowClick={rowData => {
                     console.log(rowData);
                 }}
@@ -112,12 +111,12 @@ function App() {
 
                 <Column width={150}>
                     <HeaderCell>First Name</HeaderCell>
-                    <Cell dataKey="firstName" />
+                    <Cell dataKey="firstname" />
                 </Column>
 
                 <Column width={150}>
                     <HeaderCell>Last Name</HeaderCell>
-                    <Cell dataKey="lastName" />
+                    <Cell dataKey="lastname" />
                 </Column>
 
                 <Column width={100}>

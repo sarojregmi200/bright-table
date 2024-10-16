@@ -46,7 +46,7 @@ export interface InnerCellProps<Row extends RowDataType, Key extends RowKeyType>
     expanded?: boolean;
     predefinedStyle?: React.CSSProperties;
     onTreeToggle?: (rowKey?: Key, rowIndex?: number, rowData?: Row, event?: React.MouseEvent) => void;
-
+    isDarkMode?: boolean;
     renderTreeToggle?: (
         expandButton: React.ReactNode,
         rowData?: Row,
@@ -100,6 +100,9 @@ const Cell = React.forwardRef(
             renderTreeToggle,
             onClick,
             onTreeToggle,
+
+            // newly added
+            isDarkMode = false,
             ...rest
         } = props;
 
@@ -211,11 +214,11 @@ const Cell = React.forwardRef(
         type htmlStyleAttr = React.HTMLAttributes<HTMLDivElement>["style"] | undefined;
 
         const evenRowStyle: htmlStyleAttr = {
-            backgroundColor: "#f6faff"
+            backgroundColor: isDarkMode ? "#fv6faff" : "#F9FCFF"
         }
 
         const oddRowStyle: htmlStyleAttr = {
-            backgroundColor: "#fffff"
+            backgroundColor: isDarkMode ? "#000000" : "#fffff"
         }
 
         return (
