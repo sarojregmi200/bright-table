@@ -81,8 +81,22 @@ function clean(done) {
   done();
 }
 
+function watchFiles() {
+  gulp.watch(
+    'src/*',
+    gulp.series(
+      clean,
+      gulp.parallel(buildLib, buildEsm, gulp.series(buildLess, buildCSS)),
+      gulp.parallel(copyTypescriptDeclarationFiles, copyLessFiles, copyFontFiles)
+    )
+  );
+}
+
 exports.build = gulp.series(
   clean,
   gulp.parallel(buildLib, buildEsm, gulp.series(buildLess, buildCSS)),
   gulp.parallel(copyTypescriptDeclarationFiles, copyLessFiles, copyFontFiles)
 );
+
+// watching for file changes
+exports.default = gulp.parallel(watchFiles);
