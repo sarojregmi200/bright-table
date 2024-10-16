@@ -271,7 +271,6 @@ const getChildrenProps = {
 
 const Table = React.forwardRef(
     <Row extends RowDataType, Key extends RowKeyType>(props: TableProps<Row, Key>, ref) => {
-
         const {
             affixHeader,
             children: getChildren,
