@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo } from 'react';
 import * as ReactIs from 'react-is';
 import { getTranslateDOMPositionXY } from 'dom-lib/translateDOMPositionXY';
-import PropTypes, { OptionalKeys } from 'prop-types';
+import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import debounce from 'lodash/debounce';
 import Row, { RowProps } from './Row';
@@ -53,7 +53,7 @@ import type {
 import { flattenChildren } from './utils/children';
 
 // importing the default css file.
-import "./less/index.less";
+import "../dist/css/bright-table.css";
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {

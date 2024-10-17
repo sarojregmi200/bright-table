@@ -10,6 +10,7 @@ import ArrowRight from '@rsuite/icons/ArrowRight';
 import ArrowDown from '@rsuite/icons/ArrowDown';
 import { StandardProps, RowDataType, RowKeyType } from './@types/common';
 import { columnHandledProps } from './Column';
+import { cn } from './tailwind/twMerge';
 
 export interface CellProps<Row extends RowDataType> extends StandardProps {
     /** Data binding key, but also a sort of key */
@@ -227,13 +228,13 @@ const Cell = React.forwardRef(
                 role={isHeaderCell ? 'columnheader' : 'gridcell'}
                 {...omit(rest, [...groupKeys, ...columnHandledProps])}
                 onClick={onClick}
-                className={classes}
+                className={cn(classes, "bg-red-600")}
                 style={{
                     ...styles,
                     ...(!isHeaderCell ? (isEven ? evenRowStyle : oddRowStyle) : {})
                 }}
             >
-                <div className={prefix('content')} style={contentStyles}>
+                <div className={cn(prefix('content'), "bg-blue-600")} style={contentStyles}>
                     {content}
                 </div>
             </div>
