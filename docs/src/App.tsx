@@ -95,10 +95,15 @@ function App() {
                 <li>
                     Context menu support.
                 </li>
+
+                <li>
+                    Ability to pass in a theme object.
+                </li>
             </span>
 
             <Table
                 data={data}
+                cellBordered
                 minHeight={500}
                 onRowClick={rowData => {
                     console.log(rowData);

@@ -295,7 +295,6 @@ const Table = React.forwardRef(
             id,
             isTree,
             hover = true,
-            bordered,
             cellBordered,
             wordWrap,
             loading,
@@ -339,6 +338,7 @@ const Table = React.forwardRef(
 
             // newly added features
             defaultPagination = false,
+            isDarkMode = false,
             ...rest
         } = props;
 
@@ -468,7 +468,6 @@ const Table = React.forwardRef(
             children,
             expandedRowKeys,
             showHeader,
-            bordered,
             onTableScroll: debounce((coords: { x?: number; y?: number }) => onScrollTo(coords), 100),
             onTableResizeChange: handleTableResizeChange
         });
@@ -604,7 +603,6 @@ const Table = React.forwardRef(
         const classes = mergeCls(
             className,
             withClassPrefix({
-                bordered,
                 loading,
                 treetable: isTree,
                 hover: hover && !shouldRowSpanColumn,
@@ -716,14 +714,15 @@ const Table = React.forwardRef(
                                         : undefined
                                 }
                             >
-                                {mergeCells(resetLeftForCells(fixedLeftCells))}
+                                {mergeCells(resetLeftForCells(fixedLeftCells), { isDarkMode, data_attr: "done" })}
                             </CellGroup>
                         ) : null}
 
-                        <CellGroup>{mergeCells(scrollCells)}</CellGroup>
+                        <CellGroup data-attr="testing">{mergeCells(scrollCells, { isDarkMode, data_attr: "done" })}</CellGroup>
 
                         {fixedRightCellGroupWidth ? (
                             <CellGroup
+                                data-attr="testing"
                                 fixed="right"
                                 style={
                                     rtl
@@ -734,7 +733,8 @@ const Table = React.forwardRef(
                                 width={fixedRightCellGroupWidth}
                             >
                                 {mergeCells(
-                                    resetLeftForCells(fixedRightCells, hasVerticalScrollbar ? SCROLLBAR_WIDTH : 0)
+                                    resetLeftForCells(fixedRightCells, hasVerticalScrollbar ? SCROLLBAR_WIDTH : 0),
+                                    { isDarkMode, data_attr: "done" }
                                 )}
                             </CellGroup>
                         ) : null}
@@ -745,7 +745,7 @@ const Table = React.forwardRef(
             } else {
                 rowNode = (
                     <>
-                        <CellGroup>{mergeCells(cells)}</CellGroup>
+                        <CellGroup>{mergeCells(cells, { data_attr: "hello now good" })}</CellGroup>
                         {shouldRenderExpandedRow && renderRowExpanded(rowData)}
                     </>
                 );
