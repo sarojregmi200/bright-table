@@ -1,43 +1,48 @@
 export interface StandardProps extends React.HTMLAttributes<HTMLElement> {
-  /** The prefix of the component CSS class */
-  classPrefix?: string;
+    /** The prefix of the component CSS class */
+    classPrefix?: string;
 
-  /** Additional classes */
-  className?: string;
+    /** Additional classes */
+    className?: string;
 
-  /** Primary content */
-  children?: React.ReactNode;
+    /** Primary content */
+    children?: React.ReactNode;
 
-  /** Additional style */
-  style?: React.CSSProperties;
+    /** Additional style */
+    style?: React.CSSProperties;
 }
 
 export type SortType = 'desc' | 'asc';
 
 export type TableSizeChangeEventName =
-  | 'bodyHeightChanged'
-  | 'bodyWidthChanged'
-  | 'widthChanged'
-  | 'heightChanged';
+    | 'bodyHeightChanged'
+    | 'bodyWidthChanged'
+    | 'widthChanged'
+    | 'heightChanged';
 
 export interface RowDataType<T = any> {
-  dataKey?: string;
-  children?: T[];
-  [key: string]: any;
+    dataKey?: string;
+    children?: T[];
+    [key: string]: any;
 }
 
 export type RowKeyType = string | number;
 
 export interface TableLocaleType {
-  emptyMessage?: string;
-  loading?: string;
+    emptyMessage?: string;
+    loading?: string;
 }
 
 export type ListenerCallback = { off: () => void };
 
 export type ElementOffset = {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
+    top: number;
+    left: number;
+    width: number;
+    height: number;
 };
+
+export type OptionalRecord<K extends keyof any, T> = {
+    [P in K]?: T;
+};
+

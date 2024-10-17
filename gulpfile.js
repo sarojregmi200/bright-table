@@ -99,4 +99,4 @@ exports.build = gulp.series(
 );
 
 // watching for file changes
-exports.default = gulp.parallel(watchFiles);
+exports.default = gulp.series(watchFiles);

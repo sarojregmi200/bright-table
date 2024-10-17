@@ -1,7 +1,7 @@
 import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo } from 'react';
 import * as ReactIs from 'react-is';
 import { getTranslateDOMPositionXY } from 'dom-lib/translateDOMPositionXY';
-import PropTypes from 'prop-types';
+import PropTypes, { OptionalKeys } from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import debounce from 'lodash/debounce';
 import Row, { RowProps } from './Row';
@@ -47,7 +47,8 @@ import type {
     RowKeyType,
     TableLocaleType,
     TableSizeChangeEventName,
-    RowDataType
+    RowDataType,
+    OptionalRecord
 } from './@types/common';
 import { flattenChildren } from './utils/children';
 
@@ -248,6 +249,9 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     * */
     defaultPagination?: boolean;
 
+    /** Additional theme configuration for custom theme. */
+    theme?: themeObject;
+
     children?:
     | React.ReactNode
     | React.ReactNode[]
@@ -262,6 +266,33 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
         ) => React.ReactElement;
     }) => React.ReactNode | React.ReactNode[]);
 }
+
+export type themeObject = OptionalRecord<
+    "border-color"
+    | "head-background"
+    | "body-background"
+    | "pagination-background"
+    | "resize-mouse-color"
+    | "row-hover-color"
+    | "row-active-color"
+    | "text-primary"
+
+    | "border-color-dark"
+    | "head-background-dark"
+    | "body-background-dark"
+    | "pagination-background-dark"
+    | "resize-mouse-color-dark"
+    | "row-hover-color-dark"
+    | "row-active-color-dark"
+    | "text-primary-dark"
+    | "loader-spin-ring-color-dark"
+    | "loader-spin-ring-active-color-dark"
+
+    | "loader-spin-ring-wide"
+    | "loader-spin-ring-color"
+    | "loader-spin-ring-active-color"
+    | "loader-duration-normal"
+    , string>
 
 interface TableRowProps extends RowProps {
     key?: string | number;
