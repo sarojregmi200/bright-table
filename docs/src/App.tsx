@@ -1,61 +1,7 @@
 import { Cell, Column, HeaderCell, Table } from "bright-table"
+import { mockData } from "./faker";
 
-const data = [
-    {
-        "id": 1,
-        "firstname": "Chelsea",
-        "lastname": "Jast",
-        "gender": "male",
-        "age": 20,
-        "postcode": "74687-1119",
-        "email": "William75@hotmail.com"
-    },
-    {
-        "id": 2,
-        "firstname": "Michel",
-        "lastname": "Zieme",
-        "gender": "female",
-        "age": 45,
-        "postcode": "37099",
-        "email": "Santa87@yahoo.com"
-    },
-    {
-        "id": 3,
-        "firstname": "Chandler",
-        "lastname": "Leffler",
-        "gender": "female",
-        "age": 42,
-        "postcode": "31807",
-        "email": "Clemmie_Nolan38@yahoo.com"
-    },
-    {
-        "id": 4,
-        "firstname": "Freeman",
-        "lastname": "Schuppe",
-        "gender": "male",
-        "age": 46,
-        "postcode": "86958",
-        "email": "Stone59@yahoo.com"
-    },
-    {
-        "id": 7,
-        "firstname": "Mellie",
-        "lastname": "Kreiger",
-        "gender": "male",
-        "age": 29,
-        "postcode": "34476",
-        "email": "Stuart_Muller@gmail.com"
-    },
-    {
-        "id": 8,
-        "firstname": "Verna",
-        "lastname": "Stroman",
-        "gender": "female",
-        "age": 43,
-        "postcode": "22524-0074",
-        "email": "Cheyenne61@gmail.com"
-    },
-]
+const data = mockData(100);
 
 function App() {
     return (
@@ -102,6 +48,7 @@ function App() {
             </span>
 
             <Table
+                defaultPagination
                 data={data}
                 cellBordered
                 minHeight={500}
