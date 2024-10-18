@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A React table library for bright office system.",
   "main": "lib/index.js",
-  "type": "module",
   "typings": "lib/index.d.ts",
   "module": "es/index.js",
   "scripts": {
