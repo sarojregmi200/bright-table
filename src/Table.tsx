@@ -54,6 +54,7 @@ import { flattenChildren } from './utils/children';
 
 // importing the default css file.
 import "../dist/css/bright-table.css";
+import Pagination from './Pagination';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {
@@ -1156,11 +1157,13 @@ const Table = React.forwardRef(
                     style={bodyStyles}
                     onScroll={onScrollBody}
                 >
+
                     <div style={wheelStyles} className={prefix('body-wheel-area')} ref={wheelWrapperRef}>
                         {topHideHeight ? <Row style={topRowStyles} className="virtualized" /> : null}
                         {visibleRows.current}
                         {bottomHideHeight ? <Row style={bottomRowStyles} className="virtualized" /> : null}
                     </div>
+
 
                     <EmptyMessage
                         locale={locale}
@@ -1192,7 +1195,7 @@ const Table = React.forwardRef(
         );
 
         const renderDefaultPagination = () => {
-            return <div> pagination </div>
+            return <Pagination tableRows={data} />
         }
 
         return (
@@ -1214,8 +1217,6 @@ const Table = React.forwardRef(
                     {showHeader && renderTableHeader(headerCells, rowWidth)}
                     {children && renderTableBody(bodyCells, rowWidth)}
 
-                    {/* Newly added features */}
-                    {defaultPagination && renderDefaultPagination()}
                     {showHeader && (
                         <MouseArea
                             ref={mouseAreaRef}
@@ -1224,7 +1225,9 @@ const Table = React.forwardRef(
                             height={getTableHeight()}
                         />
                     )}
+
                 </div>
+                {defaultPagination ? renderDefaultPagination() : null}
             </TableContext.Provider>
         );
     }
@@ -1281,7 +1284,8 @@ Table.propTypes = {
     onExpandChange: PropTypes.func,
     onTouchStart: PropTypes.func,
     onTouchMove: PropTypes.func,
-    onTouchEnd: PropTypes.func
+    onTouchEnd: PropTypes.func,
+    defaultPagination: PropTypes.bool,
 };
 
 export interface TableInstance<Row extends RowDataType, Key extends RowKeyType>

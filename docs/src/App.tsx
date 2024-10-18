@@ -51,7 +51,7 @@ function App() {
                 defaultPagination
                 data={data}
                 cellBordered
-                minHeight={500}
+                height={innerHeight}
                 onRowClick={rowData => {
                     console.log(rowData);
                 }}
@@ -91,7 +91,7 @@ function App() {
                     <Cell dataKey="email" />
                 </Column>
 
-                <Column>
+                <Column flexGrow={1}>
                     <HeaderCell>...</HeaderCell>
                     <Cell style={{ padding: '6px' }}>
                         {rowData => (
