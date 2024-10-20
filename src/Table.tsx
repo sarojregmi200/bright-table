@@ -53,7 +53,7 @@ import type {
 import { flattenChildren } from './utils/children';
 
 // importing the default css file.
-import "../dist/css/bright-table.css";
+import "./less/index.less";
 import Pagination from './Pagination';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>

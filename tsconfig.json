@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
+    "outDir": "./dist/",
     "strict": true,
     "declaration": true,
+    "declarationDir": "./dist/types",
+    "emitDeclarationOnly": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -14,7 +17,8 @@
     "module": "esnext",
     "jsx": "react",
     "skipLibCheck": true,
-    "checkjs": false
+    "checkJs": false
   },
-  "include": ["./src/**/*.ts", "./src/**/*.tsx"]
+  "include": ["./src/**/*.ts", "./src/**/*.tsx", "./src/@types/global.d.ts"],
+  "exclude": ["node_modules", "dist"] 
 }

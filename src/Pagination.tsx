@@ -75,8 +75,8 @@ const Pagination = (props: paginationProps) => {
         paginationState,
         updateRowsPerPage,
         updateCurrentPage,
-        appendRowsPerPageOptions,
-        replaceRowsPerPageOptions,
+        /* appendRowsPerPageOptions,
+        replaceRowsPerPageOptions, */
         pageStartRowNumber,
         pageEndRowNumber,
         isServerSide,

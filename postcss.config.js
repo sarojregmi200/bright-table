@@ -1,17 +1,8 @@
-const plugins = [
-  require('autoprefixer'),
-  require('cssnano')({
-    preset: [
-      'default',
-      {
-        discardComments: {
-          removeAll: true
-        }
-      }
-    ]
-  })
-];
-
-module.exports = {
-  plugins
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {}
+  }
 };
+
+export default config;
