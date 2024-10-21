@@ -52,8 +52,8 @@ import type {
 } from './@types/common';
 import { flattenChildren } from './utils/children';
 
-// importing the default css file.
 import "./less/index.less";
+
 import Pagination from './Pagination';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>

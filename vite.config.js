@@ -1,7 +1,7 @@
 import autoprefixer from 'autoprefixer';
 import { defineConfig } from 'vite';
-import fs from 'fs-extra';
 import { resolve } from 'path';
+import { readFile, writeFile } from 'fs';
 
 const prependUseClient = () => {
   return {
@@ -15,15 +15,37 @@ const prependUseClient = () => {
   };
 };
 
-const copyFiles = () => {
-  return {
-    name: 'copy-files',
-    buildEnd() {
-      fs.copySync('./src/less/index.less', './dist/css/bright-table.css');
-      // fs.copySync('./src/@types/', './dist/types');
+// NOTE: due to some reason vite is not adding the import statement for transpiled css file
+// that is why this function(plugin) exists. 
+// This is not a good way, but it works and it's fine for now.
+//  REMAINDER: Refactor
+const importDefaultCss = () => {
+    return {
+        name: "import-default-css",
+        closeBundle() {
+            const importStatement = 'import "../style.css";\n';
+            const fileToAppend = './dist/src/Table.js';
+
+            readFile(resolve(__dirname, fileToAppend), "utf8" ,(err, data) => {
+                if(err) {
+                    console.error("No css will be imported. Import it yourself");
+                    console.log(err)
+                    return;
+                }
+
+                const fileWithCSSImport = `${importStatement} ${data}`;
+
+                writeFile(resolve(__dirname, fileToAppend), fileWithCSSImport, "utf8", (err) => {
+                    if(err) {
+                        console.log("No css will be imported. Import it yourself");
+                        return;
+                    }
+                })
+            });
+        }
     }
-  };
-};
+}
+
 
 /** @type {import('vite').UserConfig} */
 export default defineConfig({
@@ -31,6 +53,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       less: {
+        sourceMap: true,
         math: 'always',
         relativeUrls: true,
         javascriptEnabled: true
@@ -53,10 +76,10 @@ export default defineConfig({
         preserveModules: true,
         entryFileNames: '[name].js',
         dir: 'dist',
-        exports: 'named'
+        exports: 'named',
       }
-    }
+    },
   },
 
-  plugins: [prependUseClient(), copyFiles()]
+  plugins: [prependUseClient(), importDefaultCss() ]
 });
