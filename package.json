@@ -6,7 +6,6 @@
   "description": "A React table library for bright office system.",
   "type": "module",
   "main": "./dist/src/index.js",
-  "types":"./dist/types/index.d.ts",
   "files": [ "dist/" ],
   "scripts": {
     "format": "prettier --write \"{src,test}/**/*.{tsx,ts,js}\"",
@@ -14,7 +13,7 @@
     "watch:lib": "vite build --watch",
     "watch:types": "tsc --watch --emitDeclarationOnly",
     "watch": "run-p  watch:lib watch:types",
-    "build": "vite build",
+    "build": "vite build && bun run build:types",
     "build:types": "npx tsc --emitDeclarationOnly",
     "build:publish":"bun run build && bun run build:types",
     "build:docs": "",

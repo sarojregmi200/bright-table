@@ -33,9 +33,10 @@ const importDefaultCss = () => {
                     return;
                 }
 
-                const fileWithCSSImport = `${importStatement} ${data}`;
+                const lines = data.split("\n");
+                const fileDataWithImport = [lines[0], importStatement, ...lines.slice(1)].join("\n");
 
-                writeFile(resolve(__dirname, fileToAppend), fileWithCSSImport, "utf8", (err) => {
+                writeFile(resolve(__dirname, fileToAppend), fileDataWithImport, "utf8", (err) => {
                     if(err) {
                         console.log("No css will be imported. Import it yourself");
                         return;

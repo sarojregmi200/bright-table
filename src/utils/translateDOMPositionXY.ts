@@ -1,4 +1,4 @@
-import { getTranslateDOMPositionXY } from 'dom-lib/translateDOMPositionXY';
+import { getTranslateDOMPositionXY } from 'dom-lib/esm/translateDOMPositionXY.js';
 
 const translateDOMPositionXY = getTranslateDOMPositionXY({ enable3DTransform: true });
 

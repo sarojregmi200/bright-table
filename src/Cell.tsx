@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import omit from 'lodash/omit';
-import isNil from 'lodash/isNil';
-import get from 'lodash/get';
+import { omit } from "lodash";
+import { isNil } from "lodash";
+import { get } from "lodash";
 import { LAYER_WIDTH, ROW_HEADER_HEIGHT, ROW_HEIGHT } from './constants';
 import { useClassNames, convertToFlex } from './utils';
 import TableContext from './TableContext';

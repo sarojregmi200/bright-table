@@ -1,9 +1,9 @@
 import React, { useRef, useCallback, useState, useEffect } from 'react';
-import WheelHandler from 'dom-lib/WheelHandler';
-import scrollLeft from 'dom-lib/scrollLeft';
-import scrollTop from 'dom-lib/scrollTop';
-import on from 'dom-lib/on';
-import removeStyle from 'dom-lib/removeStyle';
+import WheelHandler from 'dom-lib/esm/WheelHandler.js';
+import scrollLeft from 'dom-lib/esm/scrollLeft.js';
+import scrollTop from 'dom-lib/esm/scrollTop.js';
+import on from 'dom-lib/esm/on.js';
+import removeStyle from 'dom-lib/esm/removeStyle.js';
 import { requestAnimationTimeout, cancelAnimationTimeout } from './requestAnimationTimeout';
 import useUpdateEffect from './useUpdateEffect';
 import useMount from './useMount';

@@ -5,7 +5,7 @@ import * as ReactDOM from 'react-dom';
 import { findDOMNode, unmountComponentAtNode } from 'react-dom';
 import * as ReactTestUtils from 'react-dom/test-utils';
 import { render as testRender, act } from '@testing-library/react';
-import getStyle from 'dom-lib/getStyle';
+import getStyle from 'dom-lib/esm/getStyle.js';
 
 export { getStyle };
 

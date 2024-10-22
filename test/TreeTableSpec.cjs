@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor, act, fireEvent, screen } from '@testing-library/react';
-import getHeight from 'dom-lib/getHeight';
+import getHeight from 'dom-lib/esm/getHeight.js';
 import Table from '../src/Table';
 import Column from '../src/Column';
 import Cell from '../src/Cell';

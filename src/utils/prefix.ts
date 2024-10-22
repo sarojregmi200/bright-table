@@ -1,21 +1,21 @@
 import classNames from 'classnames';
-import curry from 'lodash/curry';
+import { curry } from "lodash";
 
 export function prefix(pre: string, className: string | string[]): string {
-  if (!pre || !className) {
-    return '';
-  }
+    if (!pre || !className) {
+        return '';
+    }
 
-  if (Array.isArray(className)) {
-    return classNames(className.filter(name => !!name).map(name => `${pre}-${name}`));
-  }
+    if (Array.isArray(className)) {
+        return classNames(className.filter(name => !!name).map(name => `${pre}-${name}`));
+    }
 
-  // TODO Compatible with V4
-  if (pre[pre.length - 1] === '-') {
-    return `${pre}${className}`;
-  }
+    // TODO Compatible with V4
+    if (pre[pre.length - 1] === '-') {
+        return `${pre}${className}`;
+    }
 
-  return `${pre}-${className}`;
+    return `${pre}-${className}`;
 }
 
 export default curry(prefix);

@@ -1,9 +1,9 @@
 import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo } from 'react';
 import * as ReactIs from 'react-is';
-import { getTranslateDOMPositionXY } from 'dom-lib/translateDOMPositionXY';
+import { getTranslateDOMPositionXY } from 'dom-lib/esm/translateDOMPositionXY.js';
 import PropTypes from 'prop-types';
-import isFunction from 'lodash/isFunction';
-import debounce from 'lodash/debounce';
+import { isFunction } from "lodash";
+import { debounce } from "lodash";
 import Row, { RowProps } from './Row';
 import CellGroup from './CellGroup';
 import Scrollbar, { ScrollbarInstance } from './Scrollbar';

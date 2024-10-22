@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import isNil from 'lodash/isNil';
+import { isNil } from "lodash";
 import Sort from '@rsuite/icons/Sort';
 import SortUp from '@rsuite/icons/SortUp';
 import SortDown from '@rsuite/icons/SortDown';
