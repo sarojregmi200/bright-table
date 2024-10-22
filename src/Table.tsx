@@ -55,11 +55,13 @@ import { flattenChildren } from './utils/children';
 import "./less/index.less";
 
 import Pagination from './Pagination';
+import { paginationProps } from './Pagination';
 import { PaginationContextWrapper } from './PaginationContext';
 import { usePagination } from './utils/usePagination';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
-    extends Omit<StandardProps, 'onScroll' | 'children'> {
+    extends Exclude<paginationProps, "tableRows">,
+    Omit<StandardProps, 'onScroll' | 'children'> {
     /**
      * The height of the table will be automatically expanded according to the number of data rows,
      * and no vertical scroll bar will appear
@@ -262,6 +264,7 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      */
     totalRows?: number;
 
+
     /** Additional theme configuration for custom theme. */
     theme?: themeObject;
 
@@ -381,8 +384,17 @@ const Table = React.forwardRef(
             onTouchEnd,
 
             // newly added features
-            defaultPagination = false,
             isDarkMode = false,
+
+            // pagination properties
+            totalRows,
+            defaultPagination = false,
+            onPageChange,
+            onFirstPage,
+            onLastPage,
+            onAdditionalDataRequest,
+            onRowsPerPageChange,
+
             ...rest
         } = props;
 
@@ -1025,7 +1037,7 @@ const Table = React.forwardRef(
 
             const { pageEndRowNumber, pageStartRowNumber } = usePagination({
                 tableRows: data,
-                totalRows: props.totalRows,
+                totalRows: totalRows,
             });
 
             const height = getTableHeight();
@@ -1166,7 +1178,15 @@ const Table = React.forwardRef(
         );
 
         const renderDefaultPagination = () => {
-            return <Pagination tableRows={data} />
+            return <Pagination
+                tableRows={data}
+                totalRows={totalRows}
+                onRowsPerPageChange={onRowsPerPageChange}
+                onAdditionalDataRequest={onAdditionalDataRequest}
+                onLastPage={onLastPage}
+                onFirstPage={onFirstPage}
+                onPageChange={onPageChange}
+            />
         }
 
         return (

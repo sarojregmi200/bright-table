@@ -8,9 +8,13 @@ function App() {
         <div>
 
             <Table
+                totalRows={208}
                 defaultPagination
                 data={data}
                 cellBordered
+                onAdditionalDataRequest={(req) => {
+                    console.log(req);
+                }}
                 height={innerHeight}
                 onRowClick={rowData => {
                     console.log(rowData);

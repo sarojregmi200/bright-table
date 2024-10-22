@@ -41,7 +41,7 @@ const RowPerPageSwitcher = (props: rowPerPageSwitcherProps) => {
     </div>
 };
 
-export type paginationProps = {
+export interface paginationProps {
     /** total rows is required for serverside pagination 
      * If not provided the pagination will be client side pagination.
     * */
@@ -70,6 +70,15 @@ export type paginationProps = {
 }
 
 const Pagination = (props: paginationProps) => {
+    const {
+        totalRows,
+        tableRows,
+        onAdditionalDataRequest,
+        onRowsPerPageChange,
+        onLastPage,
+        onFirstPage,
+        onPageChange
+    } = props;
 
     const {
         paginationState,
@@ -82,19 +91,83 @@ const Pagination = (props: paginationProps) => {
         isServerSide,
         rowsPerPageOptions,
         lastPageNumber,
-
     } = usePagination({
-        totalRows: props?.totalRows,
-        tableRows: props.tableRows
+        totalRows,
+        tableRows,
     });
+
+    const hasEntireTableLoaded = totalRows === tableRows.length;
 
     const { prefix } = useClassNames("btp");
 
-    const statusString = `${pageStartRowNumber}-${pageEndRowNumber} of ${isServerSide ? props.totalRows : props.tableRows.length}`;
+    const statusString = `${pageStartRowNumber}-${pageEndRowNumber} of ${isServerSide ? totalRows : tableRows.length}`;
+
+    const handlePageUpdate = (newPageNumber: number) => {
+        updateCurrentPage(lastPageNumber);
+
+        if (hasEntireTableLoaded || !totalRows)
+            return;
+
+        // TODO: Implement the skip Map for less data load
+        let requiredAdditionalRows = 0;
+
+        switch (true) {
+            case newPageNumber === 1:
+            default:
+            case newPageNumber === paginationState.currentPage:
+                break;
+
+            case newPageNumber === lastPageNumber: {
+                const rowsBeforeLastPage = paginationState.rowsPerPage * (lastPageNumber - 1);
+                const overflowRows = Math.max(tableRows.length - rowsBeforeLastPage, 0);
+
+                // getting the  number of rows required in the last page.
+                requiredAdditionalRows = paginationState.rowsPerPage - overflowRows;
+                break;
+            }
+
+            case newPageNumber > paginationState.currentPage: {
+                const rowsBeforeNewPage = paginationState.rowsPerPage * (paginationState.currentPage);
+                const overflowRows = Math.max(tableRows.length - rowsBeforeNewPage, 0);
+
+                // it means the rows are already fetched and no additional data is required 
+                if (overflowRows > paginationState.rowsPerPage)
+                    break;
+
+                // it means either there are no overflow rows or there are some below required rows.
+                requiredAdditionalRows = Math.min(
+                    paginationState.rowsPerPage - overflowRows,
+                    paginationState.rowsPerPage);
+
+                break;
+            }
+
+            // it has high probably of already being fetched.
+            case newPageNumber < paginationState.currentPage: {
+                const totalRowWithThisPage = newPageNumber * paginationState.rowsPerPage;
+                const areRowFetched = tableRows.length > totalRowWithThisPage;
+                if (areRowFetched)
+                    break;
+
+                const rowsBeforeNewPage = paginationState.rowsPerPage * (newPageNumber - 1);
+                const overflowRows = Math.max(tableRows.length - rowsBeforeNewPage, 0);
+
+                requiredAdditionalRows = Math.min(
+                    paginationState.rowsPerPage - overflowRows,
+                    paginationState.rowsPerPage
+                )
+            }
+        }
+
+        onAdditionalDataRequest?.(requiredAdditionalRows)
+    }
 
     const GoToLastPage = () => {
         return <button
-            onClick={() => { updateCurrentPage(lastPageNumber) }}
+            onClick={() => {
+                handlePageUpdate(lastPageNumber)
+                onLastPage?.()
+            }}
             disabled={paginationState.currentPage === lastPageNumber}
         >
             {">>"}
@@ -103,7 +176,10 @@ const Pagination = (props: paginationProps) => {
 
     const GoToFirstPage = () => {
         return <button
-            onClick={() => updateCurrentPage(1)}
+            onClick={() => {
+                handlePageUpdate(1)
+                onFirstPage?.()
+            }}
             disabled={paginationState.currentPage === 1}
         >
             {'<<'}
@@ -112,7 +188,10 @@ const Pagination = (props: paginationProps) => {
 
     const GoBackOnePage = () => {
         return <button
-            onClick={() => updateCurrentPage(paginationState.currentPage - 1)}
+            onClick={() => {
+                handlePageUpdate(paginationState.currentPage - 1)
+                onPageChange?.(paginationState.currentPage - 1)
+            }}
             disabled={paginationState.currentPage === 1}
         >
             {'<'}
@@ -121,7 +200,10 @@ const Pagination = (props: paginationProps) => {
 
     const GoForwardOnePage = () => {
         return <button
-            onClick={() => updateCurrentPage(paginationState.currentPage + 1)}
+            onClick={() => {
+                handlePageUpdate(paginationState.currentPage + 1)
+                onPageChange?.(paginationState.currentPage + 1)
+            }}
             disabled={paginationState.currentPage === lastPageNumber}
         >
             {'>'}
@@ -134,7 +216,7 @@ const Pagination = (props: paginationProps) => {
                 const pageNumber = index + 1;
                 return <div
                     key={`page-${pageNumber}`}
-                    onClick={() => updateCurrentPage(pageNumber)}
+                    onClick={() => handlePageUpdate(pageNumber)}
                     className={prefix(paginationState.currentPage === pageNumber ? "selected-page" : "page")}>
                     {pageNumber}
                 </div>
@@ -150,7 +232,10 @@ const Pagination = (props: paginationProps) => {
 
             <div className={prefix("rpp")}>
                 <RowPerPageSwitcher
-                    onChange={(newRowPerPage: number) => { updateRowsPerPage(newRowPerPage) }}
+                    onChange={(newRowPerPage: number) => {
+                        updateRowsPerPage(newRowPerPage);
+                        onRowsPerPageChange?.(newRowPerPage);
+                    }}
                     selectedOption={paginationState.rowsPerPage}
                     options={rowsPerPageOptions}
                 />
