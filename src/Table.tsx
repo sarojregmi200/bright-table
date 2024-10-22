@@ -55,6 +55,8 @@ import { flattenChildren } from './utils/children';
 import "./less/index.less";
 
 import Pagination from './Pagination';
+import { PaginationContextWrapper } from './PaginationContext';
+import { usePagination } from './utils/usePagination';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {
@@ -186,7 +188,11 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      */
     wordWrap?: boolean | 'break-all' | 'break-word' | 'keep-all';
 
-    /** Effectively render large tabular data */
+    /** Effectively render large tabular data 
+     * Virtualized list is not required for now.
+     * Other ways of loading data is being researched.
+     * @deprecated
+    **/
     virtualized?: boolean;
 
     /** Tree table, the callback function in the expanded node */
@@ -249,6 +255,12 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      * @default false
     * */
     defaultPagination?: boolean;
+
+    /**
+     * Total Rows, number of rows for that will be present in the table. 
+     * Use this when you need a server side pagination
+     */
+    totalRows?: number;
 
     /** Additional theme configuration for custom theme. */
     theme?: themeObject;
@@ -1008,7 +1020,14 @@ const Table = React.forwardRef(
             return scrollbars;
         };
 
-        const renderTableBody = (bodyCells: any[], rowWidth: number) => {
+
+        const RenderTableBody = ({ bodyCells, rowWidth }: { bodyCells: any[], rowWidth: number }) => {
+
+            const { pageEndRowNumber, pageStartRowNumber } = usePagination({
+                tableRows: data,
+                totalRows: props.totalRows,
+            });
+
             const height = getTableHeight();
             const bodyHeight = height - headerHeight;
             const bodyStyles = {
@@ -1033,110 +1052,66 @@ const Table = React.forwardRef(
                 }
 
                 let maxTop = minTop + height + startHeight;
-                const isCustomRowHeight = typeof rowHeight === 'function';
-                const isUncertainHeight = !!renderRowExpandedProp || isCustomRowHeight || wordWrap;
+                // Avoid white screens on the top and bottom of the table when touching and scrolling on the mobile terminal.
+                // So supplement the display data row.
+                if (isSupportTouchEvent()) {
+                    const coveredHeight = height * 3;
+                    minTop = Math.max(minTop - coveredHeight, 0);
+                    maxTop = maxTop + coveredHeight;
+                }
 
-                // If virtualized is enabled and the row height in the Table is variable,
-                // you need to loop through the data to get the height of each row.
-                if ((isUncertainHeight && virtualized) || !virtualized) {
-                    // Avoid white screens on the top and bottom of the table when touching and scrolling on the mobile terminal.
-                    // So supplement the display data row.
-                    if (isSupportTouchEvent()) {
-                        const coveredHeight = height * 3;
-                        minTop = Math.max(minTop - coveredHeight, 0);
-                        maxTop = maxTop + coveredHeight;
-                    }
+                for (let index = pageStartRowNumber - 1; index < pageEndRowNumber; index++) {
+                    const rowData = data[index];
+                    const maxHeight = tableRowsMaxHeight[index];
+                    const expandedRow = shouldRenderExpandedRow(rowData);
 
-                    for (let index = 0; index < data.length; index++) {
-                        const rowData = data[index];
-                        const maxHeight = tableRowsMaxHeight[index];
-                        const expandedRow = shouldRenderExpandedRow(rowData);
+                    let nextRowHeight = 0;
+                    let cellHeight = 0;
 
-                        let nextRowHeight = 0;
-                        let cellHeight = 0;
+                    if (typeof rowHeight === 'function') {
+                        nextRowHeight = rowHeight(rowData);
+                        cellHeight = nextRowHeight;
+                    } else {
+                        nextRowHeight = maxHeight
+                            ? Math.max(maxHeight + CELL_PADDING_HEIGHT, rowHeight)
+                            : rowHeight;
 
-                        if (typeof rowHeight === 'function') {
-                            nextRowHeight = rowHeight(rowData);
-                            cellHeight = nextRowHeight;
-                        } else {
-                            nextRowHeight = maxHeight
-                                ? Math.max(maxHeight + CELL_PADDING_HEIGHT, rowHeight)
-                                : rowHeight;
-
-                            cellHeight = nextRowHeight;
-                            if (expandedRow) {
-                                // If the row is expanded, the height of the expanded row is added.
-                                if (typeof rowExpandedHeight === 'function') {
-                                    nextRowHeight += rowExpandedHeight(rowData);
-                                } else {
-                                    nextRowHeight += rowExpandedHeight;
-                                }
+                        cellHeight = nextRowHeight;
+                        if (expandedRow) {
+                            // If the row is expanded, the height of the expanded row is added.
+                            if (typeof rowExpandedHeight === 'function') {
+                                nextRowHeight += rowExpandedHeight(rowData);
+                            } else {
+                                nextRowHeight += rowExpandedHeight;
                             }
                         }
+                    }
 
-                        contentHeight += nextRowHeight;
+                    contentHeight += nextRowHeight;
 
-                        const rowProps = {
-                            key: index,
-                            top,
-                            rowIndex: index,
-                            width: rowWidth,
-                            depth: rowData[TREE_DEPTH],
-                            height: nextRowHeight,
-                            cellHeight
-                        };
+                    const rowProps = {
+                        key: index,
+                        top,
+                        rowIndex: index,
+                        width: rowWidth,
+                        depth: rowData[TREE_DEPTH],
+                        height: nextRowHeight,
+                        cellHeight
+                    };
 
-                        top += nextRowHeight;
+                    top += nextRowHeight;
 
-                        if (virtualized && !wordWrap) {
-                            if (top + nextRowHeight < minTop) {
-                                topHideHeight += nextRowHeight;
-                                continue;
-                            } else if (top > maxTop) {
-                                bottomHideHeight += nextRowHeight;
-                                continue;
-                            }
+                    if (virtualized && !wordWrap) {
+                        if (top + nextRowHeight < minTop) {
+                            topHideHeight += nextRowHeight;
+                            continue;
+                        } else if (top > maxTop) {
+                            bottomHideHeight += nextRowHeight;
+                            continue;
                         }
-
-                        visibleRows.current.push(renderRowData(bodyCells, rowData, rowProps, expandedRow));
-                    }
-                } else {
-                    /** virtualized */
-
-                    // If the row height of the Table is fixed, it is directly calculated by the row height and the number of rows,
-                    // thereby reducing the performance cost of traversing all data.
-                    const nextRowHeight = getRowHeight();
-                    let startIndex = Math.max(Math.floor(minTop / nextRowHeight), 0);
-                    let endIndex = Math.min(
-                        startIndex + Math.ceil(bodyHeight / nextRowHeight) + 5,
-                        data.length
-                    );
-
-                    // Avoid white screens on the top and bottom of the table when touching and scrolling on the mobile terminal.
-                    // So supplement the display data row.
-                    if (isSupportTouchEvent()) {
-                        const coveredCount = Math.floor((height / nextRowHeight) * 3);
-                        startIndex = Math.max(startIndex - coveredCount, 0);
-                        endIndex = Math.min(endIndex + coveredCount, data.length);
                     }
 
-                    contentHeight = data.length * nextRowHeight;
-                    topHideHeight = startIndex * nextRowHeight;
-                    bottomHideHeight = (data.length - endIndex) * nextRowHeight;
-
-                    for (let index = startIndex; index < endIndex; index++) {
-                        const rowData = data[index];
-                        const rowProps = {
-                            key: index,
-                            rowIndex: index,
-                            depth: rowData[TREE_DEPTH],
-                            top: index * nextRowHeight,
-                            width: rowWidth,
-                            height: nextRowHeight,
-                            cellHeight: nextRowHeight
-                        };
-                        visibleRows.current.push(renderRowData(bodyCells, rowData, rowProps, false));
-                    }
+                    visibleRows.current.push(renderRowData(bodyCells, rowData, rowProps, expandedRow));
                 }
             }
 
@@ -1146,8 +1121,6 @@ const Table = React.forwardRef(
                 minHeight: height,
                 pointerEvents: isScrolling ? 'none' : undefined
             };
-            const topRowStyles = { height: topHideHeight };
-            const bottomRowStyles = { height: bottomHideHeight };
 
             return (
                 <div
@@ -1159,9 +1132,7 @@ const Table = React.forwardRef(
                 >
 
                     <div style={wheelStyles} className={prefix('body-wheel-area')} ref={wheelWrapperRef}>
-                        {topHideHeight ? <Row style={topRowStyles} className="virtualized" /> : null}
                         {visibleRows.current}
-                        {bottomHideHeight ? <Row style={bottomRowStyles} className="virtualized" /> : null}
                     </div>
 
 
@@ -1200,35 +1171,39 @@ const Table = React.forwardRef(
 
         return (
             <TableContext.Provider value={contextValue}>
-                <div
-                    role={isTree ? 'treegrid' : 'grid'}
-                    // The aria-rowcount is specified on the element with the table.
-                    // Its value is an integer equal to the total number of rows available, including header rows.
-                    aria-rowcount={data.length + 1}
-                    aria-colcount={colCounts.current}
-                    aria-busy={loading}
-                    {...rest}
-                    className={classes}
-                    style={styles}
-                    ref={tableRef}
-                    tabIndex={-1}
-                    onKeyDown={onScrollByKeydown}
-                >
-                    {showHeader && renderTableHeader(headerCells, rowWidth)}
-                    {children && renderTableBody(bodyCells, rowWidth)}
+                <PaginationContextWrapper>
+                    <div
+                        role={isTree ? 'treegrid' : 'grid'}
+                        // The aria-rowcount is specified on the element with the table.
+                        // Its value is an integer equal to the total number of rows available, including header rows.
+                        aria-rowcount={data.length + 1}
+                        aria-colcount={colCounts.current}
+                        aria-busy={loading}
+                        {...rest}
+                        className={classes}
+                        style={styles}
+                        ref={tableRef}
+                        tabIndex={-1}
+                        onKeyDown={onScrollByKeydown}
+                    >
 
-                    {showHeader && (
-                        <MouseArea
-                            ref={mouseAreaRef}
-                            addPrefix={prefix}
-                            headerHeight={headerHeight}
-                            height={getTableHeight()}
-                        />
-                    )}
+                        {showHeader && renderTableHeader(headerCells, rowWidth)}
+                        {children && <RenderTableBody bodyCells={bodyCells} rowWidth={rowWidth} />}
 
-                </div>
-                {defaultPagination ? renderDefaultPagination() : null}
+                        {showHeader && (
+                            <MouseArea
+                                ref={mouseAreaRef}
+                                addPrefix={prefix}
+                                headerHeight={headerHeight}
+                                height={getTableHeight()}
+                            />
+                        )}
+
+                    </div>
+                    {defaultPagination ? renderDefaultPagination() : null}
+                </PaginationContextWrapper>
             </TableContext.Provider>
+
         );
     }
 );

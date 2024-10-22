@@ -13,7 +13,7 @@ export type data = {
 export const mockData = (count: number): data[] => {
     const data: data[] = [];
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 1; i <= count; i++) {
         data.push({
             id: i,
             firstname: faker.person.firstName(),

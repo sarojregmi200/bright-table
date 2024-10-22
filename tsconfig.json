@@ -19,8 +19,11 @@
     "skipLibCheck": true,
     "checkJs": false
   },
-  "include": [
-      "./dist/types/**/*"
-  ],
-  "exclude": ["node_modules", "dist"] 
+  // "include": ["src"],
+  "exclude": [
+      "node_modules",
+      "dist",
+      "test",
+      "docs"
+  ]
 }

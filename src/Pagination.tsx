@@ -93,27 +93,39 @@ const Pagination = (props: paginationProps) => {
     const statusString = `${pageStartRowNumber}-${pageEndRowNumber} of ${isServerSide ? props.totalRows : props.tableRows.length}`;
 
     const GoToLastPage = () => {
-        return <div onClick={() => { updateCurrentPage(lastPageNumber) }}>
+        return <button
+            onClick={() => { updateCurrentPage(lastPageNumber) }}
+            disabled={paginationState.currentPage === lastPageNumber}
+        >
             {">>"}
-        </div>
+        </button>
     }
 
     const GoToFirstPage = () => {
-        return <div onClick={() => updateCurrentPage(1)}>
+        return <button
+            onClick={() => updateCurrentPage(1)}
+            disabled={paginationState.currentPage === 1}
+        >
             {'<<'}
-        </div>
+        </button>
     }
 
     const GoBackOnePage = () => {
-        return <div onClick={() => updateCurrentPage(paginationState.currentPage - 1)}>
+        return <button
+            onClick={() => updateCurrentPage(paginationState.currentPage - 1)}
+            disabled={paginationState.currentPage === 1}
+        >
             {'<'}
-        </div>
+        </button>
     }
 
     const GoForwardOnePage = () => {
-        return <div onClick={() => updateCurrentPage(paginationState.currentPage + 1)}>
+        return <button
+            onClick={() => updateCurrentPage(paginationState.currentPage + 1)}
+            disabled={paginationState.currentPage === lastPageNumber}
+        >
             {'>'}
-        </div>
+        </button>
     }
 
     const NumberedSwitcher = () => {

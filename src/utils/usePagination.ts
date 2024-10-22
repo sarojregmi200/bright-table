@@ -1,21 +1,17 @@
-import { useState } from "react"
 import { paginationProps } from "../Pagination";
-
-type paginationState = {
-    currentPage: number,
-    rowsPerPage: number,
-};
-type rowsPerPageOptions = number[];
-
-const defaultRowsPerPageOptions = [10, 25, 50, 75, 100];
+import {
+    rowsPerPageOptions,
+    usePaginationContext
+} from "../PaginationContext";
 
 export const usePagination = (props: Pick<paginationProps, "tableRows" | "totalRows">) => {
     const { tableRows, totalRows } = props;
-    const [paginationState, setPaginationState] = useState<paginationState>({
-        currentPage: 1,
-        rowsPerPage: 10
-    });
-    const [rowsPerPageOptions, setRowsPerPageOptions] = useState<rowsPerPageOptions>(defaultRowsPerPageOptions);
+    const {
+        rowsPerPageOptions,
+        paginationState,
+        setPaginationState,
+        setRowsPerPageOptions
+    } = usePaginationContext();
 
     // if totalrows is present it is server side pagination.
     const isServerSide = typeof totalRows === "number";
