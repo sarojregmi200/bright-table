@@ -56,12 +56,9 @@ import "./less/index.less";
 
 import Pagination from './Pagination';
 import { paginationProps } from './Pagination';
-import { PaginationContextWrapper } from './PaginationContext';
-import { usePagination } from './utils/usePagination';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
-    extends Exclude<paginationProps, "tableRows">,
-    Omit<StandardProps, 'onScroll' | 'children'> {
+    extends Omit<StandardProps, 'onScroll' | 'children'> {
     /**
      * The height of the table will be automatically expanded according to the number of data rows,
      * and no vertical scroll bar will appear
@@ -252,21 +249,10 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      **/
     bodyRef?: (ref: HTMLElement) => void;
 
-    /** 
-     * Default pagination can also be customized by passing a Pagination as a child. 
-     * @default false
-    * */
-    defaultPagination?: boolean;
-
-    /**
-     * Total Rows, number of rows for that will be present in the table. 
-     * Use this when you need a server side pagination
-     */
-    totalRows?: number;
-
-
     /** Additional theme configuration for custom theme. */
     theme?: themeObject;
+
+    pagination?: paginationProps;
 
     children?:
     | React.ReactNode
@@ -281,6 +267,7 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
             props: HeaderCellProps<Row, Key> & React.RefAttributes<HTMLDivElement>
         ) => React.ReactElement;
     }) => React.ReactNode | React.ReactNode[]);
+
 }
 
 export type themeObject = OptionalRecord<
@@ -385,19 +372,11 @@ const Table = React.forwardRef(
 
             // newly added features
             isDarkMode = false,
-
             // pagination properties
-            totalRows,
-            defaultPagination = false,
-            onPageChange,
-            onFirstPage,
-            onLastPage,
-            onAdditionalDataRequest,
-            onRowsPerPageChange,
+            pagination,
 
             ...rest
         } = props;
-
 
         const children = useMemo(
             () => flattenChildren(isFunction(getChildren) ? getChildren(getChildrenProps) : getChildren),
@@ -1034,12 +1013,6 @@ const Table = React.forwardRef(
 
 
         const RenderTableBody = ({ bodyCells, rowWidth }: { bodyCells: any[], rowWidth: number }) => {
-
-            const { pageEndRowNumber, pageStartRowNumber } = usePagination({
-                tableRows: data,
-                totalRows: totalRows,
-            });
-
             const height = getTableHeight();
             const bodyHeight = height - headerHeight;
             const bodyStyles = {
@@ -1053,7 +1026,7 @@ const Table = React.forwardRef(
 
             visibleRows.current = [];
 
-            if (data) {
+            if (data.length) {
                 let top = 0; // Row position
                 let minTop = Math.abs(scrollY.current);
                 let startHeight = 0;
@@ -1072,7 +1045,7 @@ const Table = React.forwardRef(
                     maxTop = maxTop + coveredHeight;
                 }
 
-                for (let index = pageStartRowNumber - 1; index < pageEndRowNumber; index++) {
+                for (let index = 0; index < data.length; index++) {
                     const rowData = data[index];
                     const maxHeight = tableRowsMaxHeight[index];
                     const expandedRow = shouldRenderExpandedRow(rowData);
@@ -1140,13 +1113,11 @@ const Table = React.forwardRef(
                     role="rowgroup"
                     className={prefix('body-row-wrapper')}
                     style={bodyStyles}
-                    onScroll={onScrollBody}
-                >
+                    onScroll={onScrollBody}>
 
                     <div style={wheelStyles} className={prefix('body-wheel-area')} ref={wheelWrapperRef}>
                         {visibleRows.current}
                     </div>
-
 
                     <EmptyMessage
                         locale={locale}
@@ -1178,49 +1149,42 @@ const Table = React.forwardRef(
         );
 
         const renderDefaultPagination = () => {
-            return <Pagination
-                tableRows={data}
-                totalRows={totalRows}
-                onRowsPerPageChange={onRowsPerPageChange}
-                onAdditionalDataRequest={onAdditionalDataRequest}
-                onLastPage={onLastPage}
-                onFirstPage={onFirstPage}
-                onPageChange={onPageChange}
-            />
+            if (data.length && pagination)
+                return <Pagination {...pagination} />
+
+            return null;
         }
 
         return (
             <TableContext.Provider value={contextValue}>
-                <PaginationContextWrapper>
-                    <div
-                        role={isTree ? 'treegrid' : 'grid'}
-                        // The aria-rowcount is specified on the element with the table.
-                        // Its value is an integer equal to the total number of rows available, including header rows.
-                        aria-rowcount={data.length + 1}
-                        aria-colcount={colCounts.current}
-                        {...rest}
-                        className={classes}
-                        style={styles}
-                        ref={tableRef}
-                        tabIndex={-1}
-                        onKeyDown={onScrollByKeydown}
-                    >
+                <div
+                    role={isTree ? 'treegrid' : 'grid'}
+                    // The aria-rowcount is specified on the element with the table.
+                    // Its value is an integer equal to the total number of rows available, including header rows.
+                    aria-rowcount={data.length + 1}
+                    aria-colcount={colCounts.current}
+                    {...rest}
+                    className={classes}
+                    style={styles}
+                    ref={tableRef}
+                    tabIndex={-1}
+                    onKeyDown={onScrollByKeydown}
+                >
 
-                        {showHeader && renderTableHeader(headerCells, rowWidth)}
-                        {children && <RenderTableBody bodyCells={bodyCells} rowWidth={rowWidth} />}
+                    {showHeader && renderTableHeader(headerCells, rowWidth)}
+                    {children && <RenderTableBody bodyCells={bodyCells} rowWidth={rowWidth} />}
 
-                        {showHeader && (
-                            <MouseArea
-                                ref={mouseAreaRef}
-                                addPrefix={prefix}
-                                headerHeight={headerHeight}
-                                height={getTableHeight()}
-                            />
-                        )}
+                    {showHeader && (
+                        <MouseArea
+                            ref={mouseAreaRef}
+                            addPrefix={prefix}
+                            headerHeight={headerHeight}
+                            height={getTableHeight()}
+                        />
+                    )}
 
-                    </div>
-                    {defaultPagination ? renderDefaultPagination() : null}
-                </PaginationContextWrapper>
+                </div>
+                {pagination ? renderDefaultPagination() : null}
             </TableContext.Provider>
 
         );
@@ -1279,7 +1243,6 @@ Table.propTypes = {
     onTouchStart: PropTypes.func,
     onTouchMove: PropTypes.func,
     onTouchEnd: PropTypes.func,
-    defaultPagination: PropTypes.bool,
 };
 
 export interface TableInstance<Row extends RowDataType, Key extends RowKeyType>
