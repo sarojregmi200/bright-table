@@ -1,9 +1,21 @@
 import { Cell, Column, HeaderCell, Table } from "bright-table"
-import { mockData } from "./faker";
+import { data, mockData } from "./faker";
+import { useEffect, useState } from "react";
 
-const data = mockData(100);
 
 function App() {
+    const [data, setData] = useState<data[]>([]);
+
+    useEffect(() => {
+        setData(mockData(100));
+    });
+
+    const handleAdditionalDataRequest = (reqNum: number) => {
+        const additionalData = mockData(reqNum);
+        setData((prev) => [...prev, ...additionalData])
+    }
+
+
     return (
         <div>
 
@@ -12,8 +24,9 @@ function App() {
                 defaultPagination
                 data={data}
                 cellBordered
-                onAdditionalDataRequest={(req) => {
-                    console.log(req);
+                onAdditionalDataRequest={(reqDataNum: number) => {
+                    if (!reqDataNum) return;
+                    handleAdditionalDataRequest(reqDataNum)
                 }}
                 height={innerHeight}
                 onRowClick={rowData => {

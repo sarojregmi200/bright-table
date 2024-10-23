@@ -103,7 +103,7 @@ const Pagination = (props: paginationProps) => {
     const statusString = `${pageStartRowNumber}-${pageEndRowNumber} of ${isServerSide ? totalRows : tableRows.length}`;
 
     const handlePageUpdate = (newPageNumber: number) => {
-        updateCurrentPage(lastPageNumber);
+        updateCurrentPage(newPageNumber);
 
         if (hasEntireTableLoaded || !totalRows)
             return;
@@ -158,6 +158,8 @@ const Pagination = (props: paginationProps) => {
                 )
             }
         }
+
+        console.log(requiredAdditionalRows);
 
         onAdditionalDataRequest?.(requiredAdditionalRows)
     }
@@ -234,6 +236,7 @@ const Pagination = (props: paginationProps) => {
                 <RowPerPageSwitcher
                     onChange={(newRowPerPage: number) => {
                         updateRowsPerPage(newRowPerPage);
+                        handlePageUpdate(1);
                         onRowsPerPageChange?.(newRowPerPage);
                     }}
                     selectedOption={paginationState.rowsPerPage}
