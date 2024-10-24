@@ -13,7 +13,7 @@ const RowPerPageSwitcher = (props: rowPerPageSwitcherProps) => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [active, setActive] = useState<number>(props.selectedOption || defaultRowsPerPageOptions[0]);
 
-    return <div className="RPP-container">
+    return <div className="RPP-container bg-red-500">
         <div className="RPP-text"> Rows Per Page:</div>
         <div className="RPP-switch-box" onClick={() => setIsVisible(true)}>
             <span>

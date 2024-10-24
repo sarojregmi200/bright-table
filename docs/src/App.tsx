@@ -9,7 +9,7 @@ function App() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const data = mockData(100);
+        const data = mockData(10);
         setData(data);
         setLoading(false);
     }, []);
@@ -93,7 +93,7 @@ function App() {
                 loading={loading}
                 data={data}
                 cellBordered
-                height={innerHeight}
+                height={10 * 46}
                 onRowClick={rowData => {
                     console.log(rowData);
                 }}

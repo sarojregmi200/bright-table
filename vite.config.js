@@ -2,6 +2,7 @@ import autoprefixer from 'autoprefixer';
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import { readFile, writeFile } from 'fs';
+import tailwindcss from "tailwindcss";
 
 const prependUseClient = () => {
   return {
@@ -58,10 +59,10 @@ export default defineConfig({
         math: 'always',
         relativeUrls: true,
         javascriptEnabled: true
-      }
+      },
     },
     postcss: {
-      plugins: [autoprefixer()]
+      plugins: [autoprefixer(), tailwindcss()]
     }
   },
   build: {
@@ -82,5 +83,5 @@ export default defineConfig({
     },
   },
 
-  plugins: [prependUseClient(), importDefaultCss() ]
+  plugins: [prependUseClient(), importDefaultCss()]
 });
