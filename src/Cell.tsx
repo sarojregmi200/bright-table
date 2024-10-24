@@ -228,13 +228,13 @@ const Cell = React.forwardRef(
                 role={isHeaderCell ? 'columnheader' : 'gridcell'}
                 {...omit(rest, [...groupKeys, ...columnHandledProps])}
                 onClick={onClick}
-                className={cn(classes, "bg-red-600")}
+                className={cn(classes, "")}
                 style={{
                     ...styles,
                     ...(!isHeaderCell ? (isEven ? evenRowStyle : oddRowStyle) : {})
                 }}
             >
-                <div className={cn(prefix('content'), "bg-blue-600")} style={contentStyles}>
+                <div className={cn(prefix('content'), "")} style={contentStyles}>
                     {content}
                 </div>
             </div>

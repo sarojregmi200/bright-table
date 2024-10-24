@@ -32,7 +32,6 @@
     "dependencies": {
         "@babel/runtime": "^7.12.5",
         "@juggle/resize-observer": "^3.3.1",
-        "@rsuite/icons": "^1.0.0",
         "classnames": "^2.3.1",
         "dom-lib": "^3.3.1",
         "lodash": "^4.17.21",

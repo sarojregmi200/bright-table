@@ -2,6 +2,8 @@ import React, { cloneElement, ReactElement, useState } from "react";
 import PropTypes from "prop-types";
 import { useClassNames } from "./utils";
 import { parseInt } from "lodash";
+import { Icon } from "./Icons";
+import { cn } from "./tailwind/twMerge";
 
 type rowPerPageSwitcherProps = {
     options: number[],
@@ -13,13 +15,15 @@ const RowPerPageSwitcher = (props: rowPerPageSwitcherProps) => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [active, setActive] = useState<number>(props.selectedOption || defaultRowsPerPageOptions[0]);
 
-    return <div className="RPP-container bg-red-500">
+    return <div className="RPP-container flex gap-2 items-center">
         <div className="RPP-text"> Rows Per Page:</div>
-        <div className="RPP-switch-box" onClick={() => setIsVisible(true)}>
+        <div
+            className="RPP-switch-box flex items-center bg-gray-100 rounded-sm px-1 justify-center"
+            onClick={() => setIsVisible(true)} >
             <span>
                 {active}
             </span>
-            {'>'}
+            <Icon name="arrow_right" className="w-4 rotate-90" />
         </div>
 
         {isVisible &&
@@ -119,6 +123,11 @@ const Pagination = (props: paginationProps) => {
     const { prefix } = useClassNames("btp");
 
     const statusString = `${serverResponse.from}-${serverResponse.to} of ${serverResponse.total}`;
+    const paginationStyle = {
+        btn: "w-6 p-1 border border-gray-200 rounded-sm text-gray-800",
+        disabled: "text-gray-400 border-gray-100",
+        left: "rotate-180"
+    }
 
     const GoToLastPage = () => {
         const isDisabled = parseInt(currentlyActivePage?.label || "") === serverResponse.last_page;
@@ -130,7 +139,10 @@ const Pagination = (props: paginationProps) => {
             },
             [linkComponent.urlProp]: isDisabled ? null : serverResponse.last_page_url,
             "aria-disabled": isDisabled,
-            children: ">>"
+            children: <Icon name="arrow_right_doubled" className={cn(
+                paginationStyle.btn,
+                isDisabled && paginationStyle.disabled,
+            )} />
         })
     }
 
@@ -143,7 +155,14 @@ const Pagination = (props: paginationProps) => {
             },
             [linkComponent.urlProp]: isDisabled ? null : serverResponse.first_page_url,
             "aria-disabled": isDisabled,
-            children: "<<"
+            children: <Icon
+                name="arrow_right_doubled"
+                className={cn(
+                    paginationStyle.left,
+                    paginationStyle.btn,
+                    isDisabled && paginationStyle.disabled,
+                )}
+            />
         })
     }
     const GoBackOnePage = () => {
@@ -154,7 +173,13 @@ const Pagination = (props: paginationProps) => {
             },
             [linkComponent.urlProp]: isDisabled ? null : serverResponse.prev_page_url,
             "aria-disabled": parseInt(currentlyActivePage?.label || "") === 1,
-            children: "<"
+            children: <Icon name="arrow_right"
+                className={cn(
+                    paginationStyle.left,
+                    paginationStyle.btn,
+                    isDisabled && paginationStyle.disabled,
+                )}
+            />
         })
     }
 
@@ -166,12 +191,18 @@ const Pagination = (props: paginationProps) => {
             },
             [linkComponent.urlProp]: isDisabled ? null : serverResponse.next_page_url,
             "aria-disabled": isDisabled,
-            children: ">"
+            children: <Icon
+                name="arrow_right"
+                className={cn(
+                    paginationStyle.btn,
+                    isDisabled && paginationStyle.disabled,
+                )}
+            />
         })
     }
 
     const NumberedSwitcher = () => {
-        return <div className={prefix("numbered-switcher")}>
+        return <div className={cn(prefix("numbered-switcher"), "flex items-center")}>
             {serverResponse.links.slice(1, serverResponse.links.length - 1).map((link, index) => {
                 const isDisabled = link.active;
 
@@ -183,6 +214,11 @@ const Pagination = (props: paginationProps) => {
                     role: "button",
                     key: `page-${index}`,
                     "aria-disabled": link.active,
+                    className: cn("w-6 aspect-square grid place-items-center rounded-sm ",
+                        link.label !== "..." && "bg-gray-100",
+                        isDisabled && "bg-gray-50 text-gray-400",
+                        link.active && "bg-[var(--blue-primary-500)] text-white",
+                    ),
                     children: link.label
                 })
             })}
@@ -190,7 +226,7 @@ const Pagination = (props: paginationProps) => {
     }
 
     return (
-        <div className={prefix("container")} >
+        <div className={cn(prefix("container"), "[font-weight:300px] text-[14px] text-gray-600")} >
             <div className={prefix("status")}>
                 {statusString}
             </div>
@@ -205,7 +241,7 @@ const Pagination = (props: paginationProps) => {
                 />
             </div>
 
-            <div className={prefix("page-switcher")}>
+            <div className={cn(prefix("page-switcher"), "items-center")}>
                 <GoToFirstPage />
                 <GoBackOnePage />
 
