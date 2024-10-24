@@ -1,9 +1,10 @@
-import React, { cloneElement, ReactElement, useState } from "react";
+import React, { cloneElement, ReactElement, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { useClassNames } from "./utils";
 import { parseInt } from "lodash";
 import { Icon } from "./Icons";
 import { cn } from "./tailwind/twMerge";
+import DirectionAwareContainer from "./utils/directionAwareeContainer";
 
 type rowPerPageSwitcherProps = {
     options: number[],
@@ -15,10 +16,13 @@ const RowPerPageSwitcher = (props: rowPerPageSwitcherProps) => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [active, setActive] = useState<number>(props.selectedOption || defaultRowsPerPageOptions[0]);
 
+    const activatorRef = useRef<HTMLDivElement>(null);
+
     return <div className="RPP-container flex gap-2 items-center">
         <div className="RPP-text"> Rows Per Page:</div>
         <div
-            className="RPP-switch-box flex items-center bg-gray-100 rounded-sm px-1 justify-center"
+            ref={activatorRef}
+            className={cn("RPP-switch-box flex items-center bg-gray-100 rounded-sm px-1 justify-center cursor-pointer",)}
             onClick={() => setIsVisible(true)} >
             <span>
                 {active}
@@ -27,7 +31,18 @@ const RowPerPageSwitcher = (props: rowPerPageSwitcherProps) => {
         </div>
 
         {isVisible &&
-            <div>
+            <DirectionAwareContainer
+                direction="top"
+                centerAlignContainer
+                directionPriority={["top", "right", "left", "bottom"]}
+                activatorRef={activatorRef}
+                activateWith="ref"
+                onOutsideClick={() => {
+                    setIsVisible(false);
+                }}
+                active={isVisible}
+                className={"w-12 flex flex-col text-center h-auto bg-white text-gray-600 rounded-sm"}
+            >
                 {props.options.map((option, index) => (
                     <div
                         key={`RPP-${index}`}
@@ -36,13 +51,16 @@ const RowPerPageSwitcher = (props: rowPerPageSwitcherProps) => {
                             setActive(option)
                             props.onChange(option);
                         }}
-                        className={option === props.selectedOption
-                            ? "RPP-selected-option"
-                            : "RPP-option"}>
+                        className={cn(
+                            "cursor-pointer hover:bg-gray-200 text-gray-700 rounded-sm",
+                            option == props.selectedOption
+                                ? "bg-[var(--blue-primary-500)] text-white"
+                                : "RPP-option"
+                        )}>
                         {option}
                     </div>
                 ))}
-            </div>}
+            </DirectionAwareContainer>}
 
     </div>
 };

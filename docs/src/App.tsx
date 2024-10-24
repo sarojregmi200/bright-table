@@ -88,7 +88,10 @@ function App() {
                     onRowsPerPageChange(newRowPerPage) {
                         console.log(newRowPerPage)
                     },
-
+                    linkComponent: {
+                        element: <a />,
+                        urlProp: "href"
+                    }
                 }}
                 loading={loading}
                 data={data}

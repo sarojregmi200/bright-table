@@ -6,23 +6,40 @@ type useOutsideClickProps = {
     active: boolean,
 }
 
+/**
+ * A handy hook to run actions based on the click outside the given reference.
+ * NOTE: Keep in mind that propagation of the `action` or `callback` must be
+ * prevented to ensure this runs perfectly.
+ *
+ * @param ref {RefObject<HTMLElement | null>} Html ref element.
+ * @param callback {() => void}
+ * @param active {boolean} trigger to register the event listener.
+ *
+ */
 export const useOutsideClick = ({
     ref,
     callback,
-    active
+    active,
 }: useOutsideClickProps) => {
-    const handleOutsideClick = (e: MouseEvent) => {
-        if (ref.current && !(ref.current).contains(e.target as HTMLElement)) {
-            callback();
-        }
-    };
-
     useEffect(() => {
-        if (active)
-            setTimeout(() => {
-                document.addEventListener("click", handleOutsideClick);
-            }, 0);
+        let timeout: any;
+        if (!active) return
 
-        return () => document.removeEventListener("click", handleOutsideClick);
+        const handleOutsideClick = (e: MouseEvent | TouchEvent) => {
+            if (ref.current && !(ref.current).contains(e.target as HTMLElement)) {
+                callback();
+            }
+        };
+        timeout = setTimeout(() => {
+            document.addEventListener("click", handleOutsideClick);
+            document.addEventListener("touchstart", handleOutsideClick);
+        }, 0)
+
+        return () => {
+            clearTimeout(timeout);
+            document.removeEventListener("click", handleOutsideClick);
+            document.removeEventListener("touchstart", handleOutsideClick);
+        }
     }, [active])
 }
+

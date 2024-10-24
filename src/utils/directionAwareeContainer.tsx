@@ -1,7 +1,8 @@
+import React from 'react';
 import { useEffect, useRef } from 'react';
-import React from "react";
-{/* import { cn } from '@/utils/twMerge'; */ }
+import { createPortal } from 'react-dom';
 import { useOutsideClick } from './useOutsideClick';
+import { cn } from '../tailwind/twMerge';
 
 export type direction = "top" | "bottom" | "right" | "left";
 
@@ -77,8 +78,8 @@ const DirectionAwareContainer = (props: directionAwareContainerProps) => {
             switch (direction) {
                 case "top":
                     contentTransform.x = triggerElementBounds.x + (isCenterAligned
-                        ? (triggerElementBounds.width / 2 - contentBounds.width / 2)
-                        : (-triggerElementBounds.width - contentBounds.width)
+                        ? ((triggerElementBounds.width / 2) - (contentBounds.width / 2))
+                        : (-triggerElementBounds.width - contentBounds.width / 2)
                     );
                     contentTransform.y = triggerElementBounds.top - contentBounds.height - directionOffset;
                     isInsideViewport = checkWillBeInsideViewPort({ x: contentTransform.x - contentBounds.width, y: contentTransform.y });
@@ -137,21 +138,19 @@ const DirectionAwareContainer = (props: directionAwareContainerProps) => {
         active: props.active || false
     });
 
-    return (
-        <div ref={contentRef} >
+    return createPortal(
+        (<div
+            ref={contentRef}
+            className={
+                cn(
+                    'bg-bg-base border border-outline-neutral rounded-md fixed top-0 left-0 z-50 opacity-0 translate-x-[50vw] translate-y-[50vh]',
+                    props.className,
+                    props.active ?
+                        "opacity-100 block" :
+                        "opacity-0 pointer-events-none hidden"
+                )} >
             {props.children}
-        </div>
-    );
+        </div>), document.body);
 };
-
-
-{/* className={
-cn(
-    'bg-bg-base border border-outline-neutral rounded-md fixed top-0 left-0 z-[5000] opacity-0 translate-x-[50vw] translate-y-[50vh]',
-    props.className,
-    props.active ?
-        "opacity-100 block" : 
-        "opacity-0 pointer-events-none hidden" 
-)}  */}
 
 export default DirectionAwareContainer;
