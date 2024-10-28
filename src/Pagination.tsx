@@ -1,7 +1,6 @@
 import React, { cloneElement, ReactElement, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { useClassNames } from "./utils";
-import { parseInt } from "lodash";
 import { Icon } from "./Icons";
 import { cn } from "./tailwind/twMerge";
 import DirectionAwareContainer from "./utils/directionAwareeContainer";
@@ -155,7 +154,7 @@ const Pagination = (props: paginationProps) => {
                 onPageChange?.(serverResponse.last_page);
                 onLastPage?.()
             },
-            [linkComponent.urlProp]: isDisabled ? null : serverResponse.last_page_url,
+            [linkComponent.urlProp]: isDisabled ? null : `${serverResponse.last_page_url}&per_page=${serverResponse.per_page}`,
             "aria-disabled": isDisabled,
             children: <Icon name="arrow_right_doubled" className={cn(
                 paginationStyle.btn,
@@ -171,7 +170,7 @@ const Pagination = (props: paginationProps) => {
                 onPageChange?.(1);
                 onFirstPage?.()
             },
-            [linkComponent.urlProp]: isDisabled ? null : serverResponse.first_page_url,
+            [linkComponent.urlProp]: isDisabled ? null : `${serverResponse.first_page_url}&per_page=${serverResponse.per_page}`,
             "aria-disabled": isDisabled,
             children: <Icon
                 name="arrow_right_doubled"
@@ -189,7 +188,7 @@ const Pagination = (props: paginationProps) => {
             onClick: () => {
                 onPageChange?.(parseInt(currentlyActivePage?.label || "") - 1)
             },
-            [linkComponent.urlProp]: isDisabled ? null : serverResponse.prev_page_url,
+            [linkComponent.urlProp]: isDisabled ? null : `${serverResponse.prev_page_url}&per_page=${serverResponse.per_page}`,
             "aria-disabled": parseInt(currentlyActivePage?.label || "") === 1,
             children: <Icon name="arrow_right"
                 className={cn(
@@ -207,7 +206,7 @@ const Pagination = (props: paginationProps) => {
             onClick: () => {
                 onPageChange?.(parseInt(currentlyActivePage?.label || "") + 1)
             },
-            [linkComponent.urlProp]: isDisabled ? null : serverResponse.next_page_url,
+            [linkComponent.urlProp]: isDisabled ? null : `${serverResponse.next_page_url}&per_page=${serverResponse.per_page}`,
             "aria-disabled": isDisabled,
             children: <Icon
                 name="arrow_right"
@@ -228,7 +227,7 @@ const Pagination = (props: paginationProps) => {
                     onClick: () => {
                         onPageChange?.(parseInt(link.label))
                     },
-                    [linkComponent.urlProp]: isDisabled ? null : link.url,
+                    [linkComponent.urlProp]: isDisabled ? null : `${link.url}&per_page=${serverResponse.per_page}`,
                     role: "button",
                     key: `page-${index}`,
                     "aria-disabled": link.active,
