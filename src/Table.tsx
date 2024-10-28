@@ -252,7 +252,15 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     /** Additional theme configuration for custom theme. */
     theme?: themeObject;
 
+    /**
+     * Server side laravel pagination.
+     */
     pagination?: paginationProps;
+
+    /**
+     * Displays checkbox for selecting rows.
+     */
+    rowSelection?: boolean;
 
     children?:
     | React.ReactNode
@@ -372,6 +380,7 @@ const Table = React.forwardRef(
 
             // newly added features
             isDarkMode = false,
+            rowSelection = false,
             // pagination properties
             pagination,
 
@@ -442,6 +451,7 @@ const Table = React.forwardRef(
         );
 
         const visibleRows = useRef<React.ReactNode[]>([]);
+
         const mouseAreaRef = useRef<HTMLDivElement>(null);
         const tableRef = useRef<HTMLDivElement>(null);
         const tableHeaderRef = useRef<HTMLDivElement>(null);
@@ -736,6 +746,7 @@ const Table = React.forwardRef(
                     fixedRightCellGroupWidth += SCROLLBAR_WIDTH;
                 }
 
+
                 rowNode = (
                     <>
                         {fixedLeftCellGroupWidth ? (
@@ -749,15 +760,22 @@ const Table = React.forwardRef(
                                         : undefined
                                 }
                             >
-                                {mergeCells(resetLeftForCells(fixedLeftCells), { isDarkMode, data_attr: "done" })}
+                                {mergeCells(resetLeftForCells(fixedLeftCells), {
+                                    isDarkMode,
+                                    shouldRenderCheckbox: !rtl && rowSelection
+                                })}
                             </CellGroup>
                         ) : null}
 
-                        <CellGroup data-attr="testing">{mergeCells(scrollCells, { isDarkMode, data_attr: "done" })}</CellGroup>
+                        <CellGroup>
+                            {mergeCells(scrollCells, {
+                                isDarkMode,
+                                shouldRenderCheckbox: !fixedLeftCellGroupWidth && rowSelection
+                            })}
+                        </CellGroup>
 
                         {fixedRightCellGroupWidth ? (
                             <CellGroup
-                                data-attr="testing"
                                 fixed="right"
                                 style={
                                     rtl
@@ -769,7 +787,10 @@ const Table = React.forwardRef(
                             >
                                 {mergeCells(
                                     resetLeftForCells(fixedRightCells, hasVerticalScrollbar ? SCROLLBAR_WIDTH : 0),
-                                    { isDarkMode, data_attr: "done" }
+                                    {
+                                        isDarkMode,
+                                        shouldRenderCheckbox: rtl && rowSelection
+                                    }
                                 )}
                             </CellGroup>
                         ) : null}
@@ -780,7 +801,9 @@ const Table = React.forwardRef(
             } else {
                 rowNode = (
                     <>
-                        <CellGroup>{mergeCells(cells, { data_attr: "hello now good" })}</CellGroup>
+                        <CellGroup>
+                            {mergeCells(cells, { shouldRenderCheckbox: rowSelection })}
+                        </CellGroup>
                         {shouldRenderExpandedRow && renderRowExpanded(rowData)}
                     </>
                 );

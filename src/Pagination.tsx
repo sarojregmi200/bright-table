@@ -132,7 +132,7 @@ const Pagination = (props: paginationProps) => {
         }
     } = props;
 
-    if (!serverResponse)
+    if (!serverResponse || (serverResponse && serverResponse.links.length < 4))
         return;
 
     const currentlyActivePage = serverResponse.links.find((link) => link.active);

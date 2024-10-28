@@ -4,6 +4,8 @@ import { get } from "lodash";
 import { isNil } from "lodash";
 import ColumnGroup from '../ColumnGroup';
 import HeaderCell from '../HeaderCell';
+import CheckBox from './checkbox';
+import Cell from '../Cell';
 
 function cloneCell(Cell, props) {
     return React.cloneElement(Cell, props);
@@ -11,8 +13,10 @@ function cloneCell(Cell, props) {
 
 function mergeCells(cells, additionalProps?: Record<string, any>) {
     const nextCells: React.ReactNode[] = [];
+    let shouldRenderCheckbox = false;
 
     for (let i = 0; i < cells.length; i += 1) {
+        shouldRenderCheckbox = i === 0 && (additionalProps?.shouldRenderCheckbox || false);
         const {
             width,
             colSpan,
@@ -22,7 +26,7 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
             groupVerticalAlign,
             isHeaderCell,
             headerHeight,
-            groupHeaderHeight
+            groupHeaderHeight,
         } = cells[i].props;
 
         const groupChildren: React.ReactNode[] = [];
@@ -30,7 +34,7 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
         // Add grouping to column headers.
         if (groupCount && isHeaderCell) {
             let nextWidth = width;
-            let left = 0;
+            let left = shouldRenderCheckbox ? 50 : 0;
             for (let j = 0; j < groupCount; j += 1) {
                 const nextCell = cells[i + j];
                 const {
@@ -71,7 +75,19 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
                     </HeaderCell>
                 );
             }
+
             nextCells.push(
+                shouldRenderCheckbox && cloneCell(
+                    <HeaderCell
+                        width={50}
+                        left={0}
+                        className='grid place-items-center group'>
+                        <CheckBox
+                            active={false}
+                            className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+                            onClick={() => { }} />
+                    </HeaderCell>,
+                    { ...additionalProps }),
                 cloneCell(cells[i], {
                     width: nextWidth,
                     children: (
@@ -122,8 +138,20 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
             }
 
             nextCells.push(
+                shouldRenderCheckbox && cloneCell(
+                    <Cell
+                        width={50}
+                        left={0}
+                        className='grid place-items-center group'>
+                        <CheckBox
+                            active={false}
+                            className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+                            onClick={() => { }} />
+                    </Cell>,
+                    { ...additionalProps }),
                 cloneCell(cells[i], {
                     width: nextWidth,
+                    left: cells[i].props.left + 50,
                     'aria-colspan': nextWidth > width ? colSpan : undefined,
                     ...additionalProps
                 })
@@ -131,9 +159,27 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
             continue;
         }
 
-        nextCells.push(cloneCell(cells[i], { ...additionalProps }));
+        nextCells.push(
+            shouldRenderCheckbox && cloneCell(
+                <Cell
+                    width={50}
+                    left={0}
+                    className='grid place-items-center group'>
+                    <CheckBox
+                        active={false}
+                        className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+                        onClick={() => { }} />
+                </Cell>,
+                { ...additionalProps }),
+            cloneCell(cells[i], {
+                left: shouldRenderCheckbox ? cells[i]?.props?.left + 50 : cells[i]?.props?.left,
+                ...additionalProps
+            }));
     }
-    return nextCells;
+
+    return [
+        ...nextCells
+    ];
 }
 
 export default mergeCells;

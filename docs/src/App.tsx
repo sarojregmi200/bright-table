@@ -83,6 +83,7 @@ function App() {
         <div>
 
             <Table
+                rowSelection={true}
                 pagination={{
                     serverResponse,
                     onRowsPerPageChange(newRowPerPage) {
@@ -157,13 +158,20 @@ function App() {
                 This contains the following additional features:
                 <br />
                 <strong> Done: </strong>
+
                 <li>Auto import css file. </li>
+                <li>Default pagination and it's helper methods. </li>
+                <li> Tailwind support. </li>
+                <li>Fix Overflow during hover fix.</li>
+
                 <br />
                 <br />
 
                 <strong> TODO: </strong>
-                <li>Default pagination and it's helper methods. </li>
-                <li>Fix Overflow during hover fix.</li>
+
+                <li>Checkbox</li>
+                <li> column sorting and searching. </li>
+
                 <li>
                     Column visibility status controller.
                     <br />
@@ -177,9 +185,6 @@ function App() {
                 </li>
                 <li>
                     Collapsable rows, when given nested data.
-                </li>
-                <li>
-                    Tailwind support.
                 </li>
 
                 <li>
@@ -198,9 +203,6 @@ function App() {
                     default search.
                 </li>
 
-                <li>
-                    column sorting and searching.
-                </li>
 
                 <li>
                     column pinning.
