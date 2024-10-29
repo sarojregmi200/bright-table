@@ -6,17 +6,24 @@ import ColumnGroup from '../ColumnGroup';
 import HeaderCell from '../HeaderCell';
 import CheckBox from './checkbox';
 import Cell from '../Cell';
+import { useRowSelection } from './useRowSelection';
 
 function cloneCell(Cell, props) {
     return React.cloneElement(Cell, props);
 }
 
-function mergeCells(cells, additionalProps?: Record<string, any>) {
+function mergeCells(
+    cells,
+    props: Record<"shouldRenderCheckbox" | string, any> = {}
+) {
     const nextCells: React.ReactNode[] = [];
-    let shouldRenderCheckbox = false;
+    let { shouldRenderCheckbox = false, ...additionalProps } = props;
+
+    // row selection  
+    {/* const { setRowSelection, isIdSelected } = useRowSelection(); */ }
 
     for (let i = 0; i < cells.length; i += 1) {
-        shouldRenderCheckbox = i === 0 && (additionalProps?.shouldRenderCheckbox || false);
+        shouldRenderCheckbox = i === 0 && shouldRenderCheckbox;
         const {
             width,
             colSpan,
@@ -79,13 +86,19 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
             nextCells.push(
                 shouldRenderCheckbox && cloneCell(
                     <HeaderCell
+                        key={i - 1}
                         width={50}
                         left={0}
+                        onClick={() => {
+
+                        }}
                         className='grid place-items-center group'>
+
                         <CheckBox
                             active={false}
                             className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
                             onClick={() => { }} />
+
                     </HeaderCell>,
                     { ...additionalProps }),
                 cloneCell(cells[i], {
@@ -140,6 +153,7 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
             nextCells.push(
                 shouldRenderCheckbox && cloneCell(
                     <Cell
+                        key={i - 1}
                         width={50}
                         left={0}
                         className='grid place-items-center group'>
@@ -162,9 +176,18 @@ function mergeCells(cells, additionalProps?: Record<string, any>) {
         nextCells.push(
             shouldRenderCheckbox && cloneCell(
                 <Cell
+                    key={i - 1}
                     width={50}
                     left={0}
-                    className='grid place-items-center group'>
+                    className='grid place-items-center group'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const cell = cells[i];
+                        console.log("key:", cell.props.key, cell.props);
+                    }}
+                >
                     <CheckBox
                         active={false}
                         className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"

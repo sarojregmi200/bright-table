@@ -81,7 +81,6 @@ function App() {
 
     return (
         <div>
-
             <Table
                 rowSelection={true}
                 pagination={{
