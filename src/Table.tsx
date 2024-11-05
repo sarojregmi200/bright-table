@@ -56,6 +56,7 @@ import "./less/index.less";
 
 import Pagination from './Pagination';
 import { paginationProps } from './Pagination';
+import { RowSelectionWrapper, useRowSelection } from './utils/useRowSelection';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {
@@ -386,6 +387,8 @@ const Table = React.forwardRef(
 
             ...rest
         } = props;
+
+        const rowSelectionHelpers = useRowSelection();
 
         const children = useMemo(
             () => flattenChildren(isFunction(getChildren) ? getChildren(getChildrenProps) : getChildren),
@@ -761,6 +764,7 @@ const Table = React.forwardRef(
                                 }
                             >
                                 {mergeCells(resetLeftForCells(fixedLeftCells), {
+                                    rowSelectionContext: rowSelectionHelpers,
                                     isDarkMode,
                                     shouldRenderCheckbox: !rtl && rowSelection
                                 })}
@@ -769,6 +773,7 @@ const Table = React.forwardRef(
 
                         <CellGroup>
                             {mergeCells(scrollCells, {
+                                rowSelectionContext: rowSelectionHelpers,
                                 isDarkMode,
                                 shouldRenderCheckbox: !fixedLeftCellGroupWidth && rowSelection
                             })}
@@ -788,6 +793,7 @@ const Table = React.forwardRef(
                                 {mergeCells(
                                     resetLeftForCells(fixedRightCells, hasVerticalScrollbar ? SCROLLBAR_WIDTH : 0),
                                     {
+                                        rowSelectionContext: rowSelectionHelpers,
                                         isDarkMode,
                                         shouldRenderCheckbox: rtl && rowSelection
                                     }
@@ -802,7 +808,10 @@ const Table = React.forwardRef(
                 rowNode = (
                     <>
                         <CellGroup>
-                            {mergeCells(cells, { shouldRenderCheckbox: rowSelection })}
+                            {mergeCells(cells, {
+                                rowSelectionContext: rowSelectionHelpers,
+                                shouldRenderCheckbox: rowSelection
+                            })}
                         </CellGroup>
                         {shouldRenderExpandedRow && renderRowExpanded(rowData)}
                     </>
@@ -1179,37 +1188,38 @@ const Table = React.forwardRef(
         }
 
         return (
-            <TableContext.Provider value={contextValue}>
-                <div
-                    role={isTree ? 'treegrid' : 'grid'}
-                    // The aria-rowcount is specified on the element with the table.
-                    // Its value is an integer equal to the total number of rows available, including header rows.
-                    aria-rowcount={data.length + 1}
-                    aria-colcount={colCounts.current}
-                    {...rest}
-                    className={classes}
-                    style={styles}
-                    ref={tableRef}
-                    tabIndex={-1}
-                    onKeyDown={onScrollByKeydown}
-                >
+            <RowSelectionWrapper>
+                <TableContext.Provider value={contextValue}>
+                    <div
+                        role={isTree ? 'treegrid' : 'grid'}
+                        // The aria-rowcount is specified on the element with the table.
+                        // Its value is an integer equal to the total number of rows available, including header rows.
+                        aria-rowcount={data.length + 1}
+                        aria-colcount={colCounts.current}
+                        {...rest}
+                        className={classes}
+                        style={styles}
+                        ref={tableRef}
+                        tabIndex={-1}
+                        onKeyDown={onScrollByKeydown}
+                    >
 
-                    {showHeader && renderTableHeader(headerCells, rowWidth)}
-                    {children && <RenderTableBody bodyCells={bodyCells} rowWidth={rowWidth} />}
+                        {showHeader && renderTableHeader(headerCells, rowWidth)}
+                        {children && <RenderTableBody bodyCells={bodyCells} rowWidth={rowWidth} />}
 
-                    {showHeader && (
-                        <MouseArea
-                            ref={mouseAreaRef}
-                            addPrefix={prefix}
-                            headerHeight={headerHeight}
-                            height={getTableHeight()}
-                        />
-                    )}
+                        {showHeader && (
+                            <MouseArea
+                                ref={mouseAreaRef}
+                                addPrefix={prefix}
+                                headerHeight={headerHeight}
+                                height={getTableHeight()}
+                            />
+                        )}
 
-                </div>
-                {pagination ? renderDefaultPagination() : null}
-            </TableContext.Provider>
-
+                    </div>
+                    {pagination ? renderDefaultPagination() : null}
+                </TableContext.Provider>
+            </RowSelectionWrapper>
         );
     }
 );
