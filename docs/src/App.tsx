@@ -1,5 +1,5 @@
 import { Cell, Column, HeaderCell, Table } from "bright-table"
-import { data, mockData } from "./faker";
+import { data, mockNestedData, } from "./faker";
 import { useEffect, useState } from "react";
 import { larvelPaginationObject } from "../../dist/types/src/Pagination";
 
@@ -9,7 +9,8 @@ function App() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const data = mockData(10);
+        const data = mockNestedData(10);
+        console.log(data)
         setData(data);
         setLoading(false);
     }, []);
@@ -82,7 +83,8 @@ function App() {
     return (
         <div>
             <Table
-                rowSelection={true}
+                isTree
+                rowKey={"id"}
                 pagination={{
                     serverResponse,
                     onRowsPerPageChange(newRowPerPage) {
@@ -94,6 +96,7 @@ function App() {
                     }
                 }}
                 loading={loading}
+                shouldUpdateScroll={false}
                 data={data}
                 cellBordered
                 height={10 * 46}
