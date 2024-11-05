@@ -148,69 +148,7 @@ function App() {
                 </Column>
 
             </Table>
-
-
-            <h2>
-                Default unstyled bright table
-            </h2>
-            <span>
-                This contains the following additional features:
-                <br />
-                <strong> Done: </strong>
-
-                <li>Auto import css file. </li>
-                <li>Default pagination and it's helper methods. </li>
-                <li> Tailwind support. </li>
-                <li>Fix Overflow during hover fix.</li>
-
-                <br />
-                <br />
-
-                <strong> TODO: </strong>
-
-                <li>Checkbox</li>
-                <li> column sorting and searching. </li>
-
-                <li>
-                    Column visibility status controller.
-                    <br />
-                    where each column has a hidden flag, always_visible flag, Editable flag.
-                </li>
-                <li>
-                    Implementing bright design, and better documentation.
-                </li>
-                <li>
-                    Selectable row, with global selection range selection while holding shift and similar features from current table.
-                </li>
-                <li>
-                    Collapsable rows, when given nested data.
-                </li>
-
-                <li>
-                    Context menu support.
-                </li>
-
-                <li>
-                    Ability to pass in a theme object.
-                </li>
-
-                <li>
-                    Ability to edit visible columns.
-                </li>
-
-                <li>
-                    default search.
-                </li>
-
-
-                <li>
-                    column pinning.
-                </li>
-
-            </span>
-
         </div>
-
     )
 }
 

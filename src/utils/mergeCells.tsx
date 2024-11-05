@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import { isFunction } from "lodash";
 import { get } from "lodash";
 import { isNil } from "lodash";
@@ -14,13 +14,19 @@ function cloneCell(Cell, props) {
 
 function mergeCells(
     cells,
-    props: Record<"shouldRenderCheckbox" | string, any> = {}
+    props:
+        (Record<"shouldRenderCheckbox" | string, any>
+            & { rowSelectionContext: ReturnType<typeof useRowSelection> | null })
+        = { rowSelectionContext: null }
 ) {
     const nextCells: React.ReactNode[] = [];
-    let { shouldRenderCheckbox = false, ...additionalProps } = props;
+    let { shouldRenderCheckbox = false, rowSelectionContext, ...additionalProps } = props;
+
+    if (!rowSelectionContext)
+        return;
 
     // row selection  
-    {/* const { setRowSelection, isIdSelected } = useRowSelection(); */ }
+    const { setRowSelection, isIdSelected, rowSelection } = rowSelectionContext;
 
     for (let i = 0; i < cells.length; i += 1) {
         shouldRenderCheckbox = i === 0 && shouldRenderCheckbox;
@@ -37,6 +43,51 @@ function mergeCells(
         } = cells[i].props;
 
         const groupChildren: React.ReactNode[] = [];
+
+        const renderCheckBox = () => {
+            // taking the row Id as the unique identifier
+            const currentRowId = cells[i]?.props?.rowData?.id;
+            const isRowSelected = isIdSelected(currentRowId);
+
+            const handleRowSelection = (e: MouseEvent<HTMLElement, globalThis.MouseEvent>) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+
+                if (isHeaderCell) {
+                    const newAllSelected = !rowSelection.allSelected;
+                    setRowSelection({
+                        selectedRows: [],
+                        allSelected: newAllSelected
+                    });
+                    return;
+                }
+
+                setRowSelection((prevSelectionState) => {
+                    return {
+                        ...prevSelectionState,
+                        // previously selected row will be removed and if
+                        // not selected then will be added
+                        selectedRows: isRowSelected
+                            ? prevSelectionState.selectedRows.filter((id) => id !== currentRowId)
+                            : [...prevSelectionState.selectedRows, currentRowId]
+                    }
+                })
+            }
+
+            return (
+                <Cell
+                    key={i - 1}
+                    width={50}
+                    left={0}
+                    className='grid place-items-center group'
+                    onClick={handleRowSelection}>
+                    <CheckBox
+                        active={isRowSelected || rowSelection.allSelected}
+                        className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+                        onClick={handleRowSelection} />
+                </Cell>)
+        }
 
         // Add grouping to column headers.
         if (groupCount && isHeaderCell) {
@@ -84,23 +135,6 @@ function mergeCells(
             }
 
             nextCells.push(
-                shouldRenderCheckbox && cloneCell(
-                    <HeaderCell
-                        key={i - 1}
-                        width={50}
-                        left={0}
-                        onClick={() => {
-
-                        }}
-                        className='grid place-items-center group'>
-
-                        <CheckBox
-                            active={false}
-                            className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
-                            onClick={() => { }} />
-
-                    </HeaderCell>,
-                    { ...additionalProps }),
                 cloneCell(cells[i], {
                     width: nextWidth,
                     children: (
@@ -152,16 +186,7 @@ function mergeCells(
 
             nextCells.push(
                 shouldRenderCheckbox && cloneCell(
-                    <Cell
-                        key={i - 1}
-                        width={50}
-                        left={0}
-                        className='grid place-items-center group'>
-                        <CheckBox
-                            active={false}
-                            className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
-                            onClick={() => { }} />
-                    </Cell>,
+                    renderCheckBox(),
                     { ...additionalProps }),
                 cloneCell(cells[i], {
                     width: nextWidth,
@@ -174,26 +199,7 @@ function mergeCells(
         }
 
         nextCells.push(
-            shouldRenderCheckbox && cloneCell(
-                <Cell
-                    key={i - 1}
-                    width={50}
-                    left={0}
-                    className='grid place-items-center group'
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        const cell = cells[i];
-                        console.log("key:", cell.props.key, cell.props);
-                    }}
-                >
-                    <CheckBox
-                        active={false}
-                        className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
-                        onClick={() => { }} />
-                </Cell>,
-                { ...additionalProps }),
+            shouldRenderCheckbox && cloneCell(renderCheckBox(), { ...additionalProps }),
             cloneCell(cells[i], {
                 left: shouldRenderCheckbox ? cells[i]?.props?.left + 50 : cells[i]?.props?.left,
                 ...additionalProps

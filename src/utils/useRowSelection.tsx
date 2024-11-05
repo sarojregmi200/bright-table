@@ -1,19 +1,36 @@
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, ReactNode, useContext, useState } from "react"
 
-type rowSelectionState = (Record<string, string[]> | string)[]
+type selectedRows = (Record<string, string[]> | string)[]
+export type rowSelectionState = {
+    selectedRows: selectedRows
+    allSelected: boolean,
+}
 
-const RowSelectionContext = createContext<{
-    rowSelection: rowSelectionState,
-    setRowSelection: React.Dispatch<React.SetStateAction<rowSelectionState>>
-} | null>(null);
+export const RowSelectionContext = createContext<{
+    rowSelectionState: rowSelectionState,
+    setRowSelectionState: React.Dispatch<React.SetStateAction<rowSelectionState>>
+}>({
+    rowSelectionState: {
+        selectedRows: [],
+        allSelected: false,
+    },
+    setRowSelectionState: () => { }
+});
 
-export const RowSelectionWrapper = ({ children }: { children: React.ReactNode }) => {
-    const [rowSelection, setRowSelection] = useState<rowSelectionState>([]);
-    return <RowSelectionContext.Provider value={{
-        rowSelection, setRowSelection
-    }}>
-        {children}
-    </RowSelectionContext.Provider>
+export const RowSelectionWrapper = ({ children }: { children: ReactNode }) => {
+    const [rowSelectionState, setRowSelectionState] = useState<rowSelectionState>({
+        selectedRows: [],
+        allSelected: false,
+    });
+
+    return (
+        <RowSelectionContext.Provider
+            value={{
+                rowSelectionState: rowSelectionState,
+                setRowSelectionState: setRowSelectionState
+            }}>
+            {children}
+        </RowSelectionContext.Provider>)
 }
 
 export const useRowSelection = () => {
@@ -21,11 +38,11 @@ export const useRowSelection = () => {
     if (!context)
         throw new Error("Cannot use row selection context outside it's provider");
 
-    const { rowSelection, setRowSelection } = context;
+    const { rowSelectionState: rowSelection, setRowSelectionState: setRowSelection } = context;
 
     const getSelectedChilds = (parentId: string): undefined | string[] => {
         // first of all it should be a parent to get it's selected childs.
-        const MatchRec = rowSelection.find((selections) => selections[parentId])
+        const MatchRec = rowSelection.selectedRows.find((selections) => selections[parentId])
         if (!MatchRec || typeof MatchRec === "string") return;
 
         return MatchRec[parentId];
@@ -38,8 +55,7 @@ export const useRowSelection = () => {
         parentId: string,
         childrens: string[],
     }): boolean => {
-
-        const MatchRec = rowSelection.find((selections) => selections[parentId])
+        const MatchRec = rowSelection.selectedRows.find((selections) => selections[parentId])
         if (!MatchRec || typeof MatchRec === "string") return false;
 
         const selectedChildrens = MatchRec[parentId];
@@ -47,12 +63,19 @@ export const useRowSelection = () => {
         return childrens.every(child => selectedChildrens.includes(child));
     }
 
+    const isGlobalChecked = () => {
+        return rowSelection.allSelected
+    }
+
     const isIdSelected = (queryId: string) => {
-        return rowSelection.some(id => {
-            if (typeof id === "string")
+        if (!rowSelection.selectedRows.length)
+            return false
+
+        return rowSelection?.selectedRows?.some(id => {
+            if (typeof id !== "object")
                 return id === queryId
 
-            return id[0].some((child) => {
+            return id?.[0]?.some((child) => {
                 return child === queryId
             })
         })
@@ -64,5 +87,6 @@ export const useRowSelection = () => {
         getSelectedChilds,
         areAllChildSelected,
         isIdSelected,
+        isGlobalChecked,
     } as const
 }
