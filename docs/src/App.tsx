@@ -79,10 +79,11 @@ function App() {
         "total": 697
     }
 
+
     return (
         <div>
             <Table
-                rowSelection={true}
+                rowKey={"id"}
                 pagination={{
                     serverResponse,
                     onRowsPerPageChange(newRowPerPage) {
@@ -94,9 +95,11 @@ function App() {
                     }
                 }}
                 loading={loading}
+                shouldUpdateScroll={false}
+                rowSelection
                 data={data}
                 cellBordered
-                height={10 * 46}
+                height={innerHeight}
                 onRowClick={rowData => {
                     console.log(rowData);
                 }}
