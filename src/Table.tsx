@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo, ReactNode } from 'react';
+import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo, ReactNode, cloneElement } from 'react';
 import * as ReactIs from 'react-is';
 import { getTranslateDOMPositionXY } from 'dom-lib/esm/translateDOMPositionXY.js';
 import PropTypes from 'prop-types';
@@ -265,10 +265,16 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
 
     /**
      * Add something at the top of table. Like a navigaiton 
-     * provides data and headers.
+     * provides data and headersProps.
      * example: Search with some filter icons.
      */
-    renderTableTopNav?: (data: readonly Row[], headers: ReactNode[]) => ReactNode;
+    renderTableTopNav?: (data: readonly Row[], headers: Record<string, any>[]) => ReactNode;
+
+    /**
+     * Header customize btn click function.
+     *
+     */
+    onHeaderCustomizeClick?: (headerProps: Record<string, any>, event: React.MouseEvent) => void;
 
     children?:
     | React.ReactNode
@@ -392,7 +398,7 @@ const Table = React.forwardRef(
             // pagination properties
             pagination,
             renderTableTopNav,
-
+            onHeaderCustomizeClick,
             ...rest
         } = props;
 
@@ -704,6 +710,23 @@ const Table = React.forwardRef(
         ) => {
             const { depth, rowIndex, ...restRowProps } = props;
 
+            if (props.isHeaderRow) {
+                cells = cells.map((cell) => {
+                    const isCustomizable = cell?.props?.customizable;
+                    const hasOnHeaderCustomizeClick = cell?.props?.onHeaderCustomizeClick;
+
+                    if (isCustomizable && !hasOnHeaderCustomizeClick) {
+                        const updatedCell = cloneElement(cell, {
+                            ...cell.props,
+                            onHeaderCustomizeClick: onHeaderCustomizeClick
+                        })
+                        return updatedCell
+                    }
+
+                    return cell;
+                })
+            }
+
             if (typeof rowClassName === 'function') {
                 restRowProps.className = rowClassName(rowData, rowIndex);
             } else {
@@ -843,7 +866,7 @@ const Table = React.forwardRef(
                 headerHeight,
                 isHeaderRow: true,
                 top: 0,
-                rowIndex: -1
+                rowIndex: -1,
             };
 
             const fixedStyle: React.CSSProperties = {
@@ -1199,7 +1222,7 @@ const Table = React.forwardRef(
             return null;
         }
 
-        const headerProps = headerCells?.map((header) => header.props)
+        const headerProps = (headerCells as any)?.map((header: any) => header.props)
 
         return (
             <RowSelectionWrapper>

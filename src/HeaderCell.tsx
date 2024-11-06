@@ -1,11 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import { isNil } from "lodash";
-import Sort from '@rsuite/icons/Sort';
-import SortUp from '@rsuite/icons/SortUp';
-import SortDown from '@rsuite/icons/SortDown';
-import ColumnResizeHandler, { FixedType } from './ColumnResizeHandler';
+import { FixedType } from './ColumnResizeHandler';
 import { useUpdateEffect, useClassNames } from './utils';
 import Cell, { InnerCellProps } from './Cell';
 import { RowDataType, RowKeyType } from './@types/common';
@@ -14,31 +10,51 @@ export interface HeaderCellProps<Row extends RowDataType, Key extends RowKeyType
     extends Omit<InnerCellProps<Row, Key>, 'onResize'> {
     index?: number;
     minWidth?: number;
+
+    /** @deprecated  in favour of customizable*/
     sortColumn?: string;
+    /** @deprecated */
     sortType?: 'desc' | 'asc';
+    /** @deprecated */
     sortable?: boolean;
+    /** @deprecated as not needed */
     resizable?: boolean;
+
     groupHeader?: boolean;
     flexGrow?: number;
     fixed?: boolean | 'left' | 'right';
     children: React.ReactNode;
+
+    /** @deprecated as unsupported */
     onResize?: (columnWidth?: number, dataKey?: string) => void;
+    /** @deprecated as unsupported */
     onSortColumn?: (dataKey?: string) => void;
+    /** @deprecated as unsupported */
     onColumnResizeStart?: (columnWidth?: number, left?: number, fixed?: boolean) => void;
+    /** @deprecated as unsupported */
     onColumnResizeMove?: (columnWidth?: number, columnLeft?: number, columnFixed?: FixedType) => void;
+    /** @deprecated as unsupported */
     onColumnResizeEnd?: (
         columnWidth?: number,
         cursorDelta?: number,
         dataKey?: any,
         index?: number
     ) => void;
+
+    /** @deprecated as not required, and customizable icon is displayed */
     renderSortIcon?: (sortType?: 'desc' | 'asc') => React.ReactNode;
+
+    /** Customizable
+     * shows a 3 dot icon besides the header Name
+    * */
+    customizable?: boolean;
+
+    /**
+     * Header customize btn click function.
+     */
+    onHeaderCustomizeClick?: (headerProps: Record<string, any>, event: React.MouseEvent) => void;
 }
 
-const SORTED_ICON = {
-    desc: SortDown,
-    asc: SortUp
-};
 
 const HeaderCell = React.forwardRef(
     <Row extends RowDataType, Key extends RowKeyType>(
@@ -71,16 +87,18 @@ const HeaderCell = React.forwardRef(
             onSortColumn,
             renderSortIcon,
             isDarkMode,
+            customizable,
+            onHeaderCustomizeClick,
             ...rest
         } = props;
 
-        const [columnWidth, setColumnWidth] = useState(isNil(flexGrow) ? width : 0);
+        const [_, setColumnWidth] = useState(isNil(flexGrow) ? width : 0);
 
         useUpdateEffect(() => {
             setColumnWidth(isNil(flexGrow) ? width : 0);
         }, [flexGrow, width]);
 
-        const { withClassPrefix, merge, prefix } = useClassNames(classPrefix);
+        const { withClassPrefix, merge } = useClassNames(classPrefix);
         const classes = merge(className, withClassPrefix({ sortable }));
 
         let ariaSort;
@@ -94,40 +112,28 @@ const HeaderCell = React.forwardRef(
             }
         }
 
-        const handleClick = useCallback(() => {
-            if (sortable) {
-                onSortColumn?.(dataKey);
-            }
-        }, [dataKey, onSortColumn, sortable]);
 
-        const handleColumnResizeStart = useCallback(() => {
-            onColumnResizeStart?.(columnWidth, left, !!fixed);
-        }, [columnWidth, fixed, left, onColumnResizeStart]);
+        // TODO: Add a callback function to listen to customize click.
+        const renderCustomizeIcon = () => {
+            if (customizable && !groupHeader)
+                return <span className='h-5 aspect-square rounded-sm flex items-center justify-center hover:bg-gray-100 cursor-pointer'
+                    onClick={(e) => {
+                        onHeaderCustomizeClick?.(props, e as React.MouseEvent)
+                    }}
 
-        const handleColumnResizeEnd = useCallback(
-            (nextColumnWidth?: number, cursorDelta?: number) => {
-                setColumnWidth(nextColumnWidth);
-                onColumnResizeEnd?.(nextColumnWidth, cursorDelta, dataKey, index);
-                onResize?.(nextColumnWidth, dataKey);
-            },
-            [dataKey, index, onColumnResizeEnd, onResize]
-        );
-
-        const renderSortColumn = () => {
-            if (sortable && !groupHeader) {
-                const SortIcon = sortColumn === dataKey && sortType ? SORTED_ICON[sortType] : Sort;
-                const iconClasses = classNames(prefix('icon-sort'), {
-                    [prefix(`icon-sort-${sortType}`)]: sortColumn === dataKey
-                });
-
-                const sortIcon = renderSortIcon ? (
-                    renderSortIcon(sortColumn === dataKey ? sortType : undefined)
-                ) : (
-                    <SortIcon className={iconClasses} />
-                );
-
-                return <span className={prefix('sort-wrapper')}>{sortIcon}</span>;
-            }
+                >
+                    <svg width="15" height="15" viewBox="0 0 21 21" fill="none" className='rotate-90'>
+                        <path
+                            d="M5.66666 10.2529C5.66666 11.0029 5.05867 11.6109 4.30867 11.6109C3.55867 11.6109 2.95068 11.0029 2.95068 10.2529C2.95068 9.50295 3.55867 8.89496 4.30867 8.89496C5.05867 8.89496 5.66666 9.50295 5.66666 10.2529Z"
+                            fill="currentColor" />
+                        <path
+                            d="M18.7553 10.2529C18.7553 11.0029 18.1473 11.6109 17.3973 11.6109C16.6473 11.6109 16.0393 11.0029 16.0393 10.2529C16.0393 9.50295 16.6473 8.89496 17.3973 8.89496C18.1473 8.89496 18.7553 9.50295 18.7553 10.2529Z"
+                            fill="currentColor" />
+                        <path
+                            d="M12.2172 10.2529C12.2172 11.0029 11.6092 11.6109 10.8592 11.6109C10.1092 11.6109 9.50122 11.0029 9.50122 10.2529C9.50122 9.50295 10.1092 8.89496 10.8592 8.89496C11.6092 8.89496 12.2172 9.50295 12.2172 10.2529Z"
+                            fill="currentColor" />
+                    </svg>
+                </span>;
             return null;
         };
 
@@ -143,25 +149,12 @@ const HeaderCell = React.forwardRef(
                     isHeaderCell={true}
                     align={!groupHeader ? align : undefined}
                     verticalAlign={!groupHeader ? verticalAlign : undefined}
-                    onClick={!groupHeader ? handleClick : undefined}
                 >
-                    {children}
-                    {renderSortColumn()}
+                    <div className="wrapper flex items-center justify-between">
+                        {children}
+                        {renderCustomizeIcon()}
+                    </div>
                 </Cell>
-
-                {resizable ? (
-                    <ColumnResizeHandler
-                        defaultColumnWidth={columnWidth}
-                        key={columnWidth}
-                        columnLeft={left}
-                        columnFixed={fixed}
-                        height={headerHeight ? headerHeight - 1 : undefined}
-                        minWidth={minWidth}
-                        onColumnResizeMove={onColumnResizeMove}
-                        onColumnResizeStart={handleColumnResizeStart}
-                        onColumnResizeEnd={handleColumnResizeEnd}
-                    />
-                ) : null}
             </div>
         );
     }

@@ -83,6 +83,9 @@ function App() {
     return (
         <div>
             <Table
+                onHeaderCustomizeClick={(data, e) => {
+                    console.log("header")
+                }}
                 rowKey={"id"}
                 pagination={{
                     serverResponse,
@@ -102,15 +105,17 @@ function App() {
                 height={innerHeight}
                 onRowClick={rowData => {
                     console.log(rowData);
-                }}
-            >
+                }}>
+
                 <Column width={60} align="center" fixed>
-                    <HeaderCell>Id</HeaderCell>
+                    <HeaderCell >Id</HeaderCell>
                     <Cell dataKey="id" />
                 </Column>
 
-                <Column width={150}>
-                    <HeaderCell>First Name</HeaderCell>
+                <Column width={150} >
+                    <HeaderCell
+                        customizable
+                    > First Name</HeaderCell>
                     <Cell dataKey="firstname" />
                 </Column>
 
