@@ -10,16 +10,19 @@ function cloneCell(Cell, props) {
     return React.cloneElement(Cell, props);
 }
 
+const CHECKBOX_WIDTH = 50
+
 function mergeCells(
     cells,
     props: (Record<"shouldRenderCheckbox" | string, any>)
 ) {
     const nextCells: React.ReactNode[] = [];
-    let { shouldRenderCheckbox = false, ...additionalProps } = props;
+    let { shouldRenderCheckbox: shouldRowRenderCheckbox = false, ...additionalProps } = props;
 
+    let checkboxCol = false;
 
     for (let i = 0; i < cells.length; i += 1) {
-        shouldRenderCheckbox = i === 0 && shouldRenderCheckbox;
+        checkboxCol = (i === 0 && shouldRowRenderCheckbox);
         const {
             width,
             colSpan,
@@ -56,7 +59,7 @@ function mergeCells(
         // header cells
         if (groupCount && isHeaderCell) {
             let nextWidth = width;
-            let left = shouldRenderCheckbox ? 50 : 0;
+            let left = shouldRowRenderCheckbox ? CHECKBOX_WIDTH : 0;
             for (let j = 0; j < groupCount; j += 1) {
                 const nextCell = cells[i + j];
                 const {
@@ -151,10 +154,12 @@ function mergeCells(
 
 
             nextCells.push(
-                shouldRenderCheckbox && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
+                checkboxCol && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
                 cloneCell(cells[i], {
                     width: nextWidth,
-                    left: cells[i].props.left + 50,
+                    left: shouldRowRenderCheckbox
+                        ? cells[i].props.left + CHECKBOX_WIDTH
+                        : cells[i].props.left,
                     'aria-colspan': nextWidth > width ? colSpan : undefined,
                     ...additionalProps
                 })
@@ -164,9 +169,11 @@ function mergeCells(
 
         // normal cell
         nextCells.push(
-            shouldRenderCheckbox && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
+            checkboxCol && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
             cloneCell(cells[i], {
-                left: shouldRenderCheckbox ? cells[i]?.props?.left + 50 : cells[i]?.props?.left,
+                left: shouldRowRenderCheckbox
+                    ? cells[i]?.props?.left + CHECKBOX_WIDTH
+                    : cells[i]?.props?.left,
                 ...additionalProps
             }));
     }
