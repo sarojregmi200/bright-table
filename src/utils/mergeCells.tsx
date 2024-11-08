@@ -1,12 +1,10 @@
-import React, { MouseEvent } from 'react';
+import React from 'react';
 import { isFunction } from "lodash";
 import { get } from "lodash";
 import { isNil } from "lodash";
 import ColumnGroup from '../ColumnGroup';
 import HeaderCell from '../HeaderCell';
-import CheckBox from './checkbox';
-import Cell from '../Cell';
-import { useRowSelection } from './useRowSelection';
+import SelectionCheckbox from '../components/SelectionCheckbox';
 
 function cloneCell(Cell, props) {
     return React.cloneElement(Cell, props);
@@ -14,19 +12,11 @@ function cloneCell(Cell, props) {
 
 function mergeCells(
     cells,
-    props:
-        (Record<"shouldRenderCheckbox" | string, any>
-            & { rowSelectionContext: ReturnType<typeof useRowSelection> | null })
-        = { rowSelectionContext: null }
+    props: (Record<"shouldRenderCheckbox" | string, any>)
 ) {
     const nextCells: React.ReactNode[] = [];
-    let { shouldRenderCheckbox = false, rowSelectionContext, ...additionalProps } = props;
+    let { shouldRenderCheckbox = false, ...additionalProps } = props;
 
-    if (!rowSelectionContext)
-        return;
-
-    // row selection  
-    const { setRowSelection, isIdSelected, rowSelection } = rowSelectionContext;
 
     for (let i = 0; i < cells.length; i += 1) {
         shouldRenderCheckbox = i === 0 && shouldRenderCheckbox;
@@ -44,52 +34,26 @@ function mergeCells(
 
         const groupChildren: React.ReactNode[] = [];
 
-        const renderCheckBox = () => {
-            // taking the row Id as the unique identifier
-            const currentRowId = cells[i]?.props?.rowData?.id;
-            const isRowSelected = isIdSelected(currentRowId);
+        const currentRowId = cells[i]?.props?.rowData?.id;
 
-            const handleRowSelection = (e: MouseEvent<HTMLElement, globalThis.MouseEvent>) => {
-                e.preventDefault();
-                e.stopPropagation();
+        if (!currentRowId && !isHeaderCell)
+            throw new Error("No field with id provided");
 
-
-                if (isHeaderCell) {
-                    const newAllSelected = !rowSelection.allSelected;
-                    setRowSelection({
-                        selectedRows: [],
-                        allSelected: newAllSelected
-                    });
-                    return;
-                }
-
-                setRowSelection((prevSelectionState) => {
-                    return {
-                        ...prevSelectionState,
-                        // previously selected row will be removed and if
-                        // not selected then will be added
-                        selectedRows: isRowSelected
-                            ? prevSelectionState.selectedRows.filter((id) => id !== currentRowId)
-                            : [...prevSelectionState.selectedRows, currentRowId]
-                    }
-                })
-            }
-
-            return (
-                <Cell
-                    key={i - 1}
-                    width={50}
-                    left={0}
-                    className='grid place-items-center group'
-                    onClick={handleRowSelection}>
-                    <CheckBox
-                        active={isRowSelected || rowSelection.allSelected}
-                        className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
-                        onClick={handleRowSelection} />
-                </Cell>)
-        }
+        const RowCheckbox = () => (
+            isHeaderCell
+                ? <SelectionCheckbox
+                    isHeaderCell={true}
+                    index={i}
+                />
+                : <SelectionCheckbox
+                    index={i}
+                    isHeaderCell={false}
+                    currentRowId={currentRowId}
+                />
+        )
 
         // Add grouping to column headers.
+        // header cells
         if (groupCount && isHeaderCell) {
             let nextWidth = width;
             let left = shouldRenderCheckbox ? 50 : 0;
@@ -154,6 +118,7 @@ function mergeCells(
             );
             continue;
         } else if (colSpan) {
+            // colSpan cells
             // If there is a colSpan attribute, go to its next Cell.
             // Determine whether the value is null or undefined, then merge this cell.
 
@@ -184,10 +149,9 @@ function mergeCells(
                 }
             }
 
+
             nextCells.push(
-                shouldRenderCheckbox && cloneCell(
-                    renderCheckBox(),
-                    { ...additionalProps }),
+                shouldRenderCheckbox && <RowCheckbox />,
                 cloneCell(cells[i], {
                     width: nextWidth,
                     left: cells[i].props.left + 50,
@@ -198,8 +162,9 @@ function mergeCells(
             continue;
         }
 
+        // normal cell
         nextCells.push(
-            shouldRenderCheckbox && cloneCell(renderCheckBox(), { ...additionalProps }),
+            shouldRenderCheckbox && <RowCheckbox />,
             cloneCell(cells[i], {
                 left: shouldRenderCheckbox ? cells[i]?.props?.left + 50 : cells[i]?.props?.left,
                 ...additionalProps

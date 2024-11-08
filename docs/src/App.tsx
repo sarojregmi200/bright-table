@@ -3,7 +3,6 @@ import { data, mockNestedData, } from "./faker";
 import { useEffect, useState } from "react";
 import { larvelPaginationObject } from "../../dist/types/src/Pagination";
 
-
 function App() {
     const [data, setData] = useState<data[]>([]);
     const [loading, setLoading] = useState(true);
@@ -83,7 +82,7 @@ function App() {
     return (
         <div>
             <Table
-                isTree
+                rowSelection
                 rowKey={"id"}
                 pagination={{
                     serverResponse,
