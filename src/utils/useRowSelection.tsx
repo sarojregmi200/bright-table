@@ -4,6 +4,11 @@ type selectedRows = (Record<string, string[]> | string)[]
 export type rowSelectionState = {
     selectedRows: selectedRows
     allSelected: boolean,
+
+    // defines the type of selection 
+    // if set to false works as normal selected rows  = selected rows
+    // if set to true works inverse selected rows contains the rows that are not selected.
+    isInverseSelection?: boolean,
 }
 
 export const RowSelectionContext = createContext<{
@@ -13,6 +18,7 @@ export const RowSelectionContext = createContext<{
     rowSelectionState: {
         selectedRows: [],
         allSelected: false,
+        isInverseSelection: false,
     },
     setRowSelectionState: () => { }
 });
@@ -21,6 +27,7 @@ export const RowSelectionWrapper = ({ children }: { children: ReactNode }) => {
     const [rowSelectionState, setRowSelectionState] = useState<rowSelectionState>({
         selectedRows: [],
         allSelected: false,
+        isInverseSelection: false,
     });
 
     return (

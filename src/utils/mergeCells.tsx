@@ -151,7 +151,7 @@ function mergeCells(
 
 
             nextCells.push(
-                shouldRenderCheckbox && <RowCheckbox />,
+                shouldRenderCheckbox && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
                 cloneCell(cells[i], {
                     width: nextWidth,
                     left: cells[i].props.left + 50,
@@ -164,7 +164,7 @@ function mergeCells(
 
         // normal cell
         nextCells.push(
-            shouldRenderCheckbox && <RowCheckbox />,
+            shouldRenderCheckbox && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
             cloneCell(cells[i], {
                 left: shouldRenderCheckbox ? cells[i]?.props?.left + 50 : cells[i]?.props?.left,
                 ...additionalProps

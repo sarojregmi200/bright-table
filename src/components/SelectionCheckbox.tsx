@@ -34,18 +34,23 @@ const SelectionCheckbox = memo(({
             const newAllSelected = !rowSelection.allSelected;
             setRowSelection({
                 selectedRows: [],
-                allSelected: newAllSelected
+                allSelected: newAllSelected,
+                isInverseSelection: newAllSelected
             });
             return;
         }
 
+
         setRowSelection((prevSelectionState: any) => ({
             ...prevSelectionState,
-            selectedRows: isRowSelected
-                ? prevSelectionState.selectedRows.filter((id: string | number) => id !== currentRowId)
-                : [...prevSelectionState.selectedRows, currentRowId]
+            allSelected: false,
+            selectedRows:
+                isRowSelected
+                    ? prevSelectionState.selectedRows.filter((id: string | number) => id !== currentRowId)
+                    : [...prevSelectionState.selectedRows, currentRowId]
         }));
     };
+
 
     const cellProps = {
         width: 50,
@@ -58,7 +63,12 @@ const SelectionCheckbox = memo(({
     return (
         <Cell {...cellProps}>
             <CheckBox
-                active={isRowSelected || rowSelection.allSelected}
+                active={
+                    isHeaderCell
+                        ? rowSelection.allSelected
+                        : rowSelection.isInverseSelection
+                            ? !isRowSelected
+                            : (isRowSelected || rowSelection.allSelected)}
                 className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
                 onClick={handleRowSelection}
             />

@@ -9,7 +9,6 @@ function App() {
 
     useEffect(() => {
         const data = mockNestedData(10);
-        console.log(data)
         setData(data);
         setLoading(false);
     }, []);
