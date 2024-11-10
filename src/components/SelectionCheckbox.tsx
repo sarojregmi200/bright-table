@@ -1,7 +1,7 @@
 import React, { MouseEvent, memo } from 'react';
 import Cell from '../Cell';
 import CheckBox from '../utils/checkbox';
-import { useRowSelection } from '../utils/useRowSelection';
+import { rowSelectionState, useRowSelection } from '../utils/useRowSelection';
 
 type HeaderCheckbox = {
     isHeaderCell: true;
@@ -13,14 +13,30 @@ type RowCheckbox = {
     currentRowId: string;
 }
 
+type TreeParent = {
+    hasChildren?: boolean,
+    childrenIds?: string[]
+    isChild?: never
+}
+
+type TreeChild = {
+    isChild?: boolean;
+    parentId?: string;
+    // contains parent's child except itself.
+    siblingIds?: string[];
+}
+
 type SelectionCheckboxProps = {
     index: number;
-} & (HeaderCheckbox | RowCheckbox);
+    onRowSelect?: (selectionState: rowSelectionState) => void
+} & (HeaderCheckbox | RowCheckbox)
+    & (TreeParent | TreeChild);
 
 const SelectionCheckbox = memo(({
     isHeaderCell,
     currentRowId,
     index,
+    onRowSelect,
     ...otherProps
 }: SelectionCheckboxProps) => {
     const { setRowSelection, isIdSelected, rowSelection } = useRowSelection();
@@ -31,26 +47,32 @@ const SelectionCheckbox = memo(({
         e.stopPropagation();
 
         if (isHeaderCell) {
-            const newAllSelected = !rowSelection.allSelected;
-            setRowSelection({
-                selectedRows: [],
-                allSelected: newAllSelected,
-                isInverseSelection: newAllSelected
+            setRowSelection((prevRowSelection) => {
+                const newAllSelected = !prevRowSelection.allSelected;
+                const updatedState = {
+                    selectedRows: [],
+                    allSelected: newAllSelected,
+                    isInverseSelection: newAllSelected
+                }
+                onRowSelect?.(updatedState);
+                return updatedState;
             });
             return;
         }
 
-
-        setRowSelection((prevSelectionState: any) => ({
-            ...prevSelectionState,
-            allSelected: false,
-            selectedRows:
-                isRowSelected
-                    ? prevSelectionState.selectedRows.filter((id: string | number) => id !== currentRowId)
-                    : [...prevSelectionState.selectedRows, currentRowId]
-        }));
+        setRowSelection((prevSelectionState: any) => {
+            const updatedState = {
+                ...prevSelectionState,
+                allSelected: false,
+                selectedRows:
+                    isRowSelected
+                        ? prevSelectionState.selectedRows.filter((id: string | number) => id !== currentRowId)
+                        : [...prevSelectionState.selectedRows, currentRowId]
+            }
+            onRowSelect?.(updatedState);
+            return updatedState;
+        });
     };
-
 
     const cellProps = {
         width: 50,
