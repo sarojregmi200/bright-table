@@ -5,6 +5,7 @@ import { isNil } from "lodash";
 import ColumnGroup from '../ColumnGroup';
 import HeaderCell from '../HeaderCell';
 import SelectionCheckbox from '../components/SelectionCheckbox';
+import { rowSelectionState } from './useRowSelection';
 
 function cloneCell(Cell, props) {
     return React.cloneElement(Cell, props);
@@ -14,15 +15,33 @@ const CHECKBOX_WIDTH = 50
 
 function mergeCells(
     cells,
-    props: (Record<"shouldRenderCheckbox" | string, any>)
+    props: (Record<"shouldRenderCheckbox" | string, any>) & {
+        onRowSelect?: (state: rowSelectionState) => void,
+        leftFixedWidth?: number
+    }
 ) {
     const nextCells: React.ReactNode[] = [];
-    let { shouldRenderCheckbox: shouldRowRenderCheckbox = false, ...additionalProps } = props;
+    let {
+        shouldRenderCheckbox: shouldRowRenderCheckbox = false,
+        onRowSelect,
+        leftFixedWidth = 0,
+        ...additionalProps
+    } = props;
+
+    // this map is done to make props read/write from read only
+    cells = cells.map((cell: any) => {
+        return {
+            ...cell,
+            props: cell.props
+        }
+    })
 
     let checkboxCol = false;
 
     for (let i = 0; i < cells.length; i += 1) {
         checkboxCol = (i === 0 && shouldRowRenderCheckbox);
+
+        // will still be present in final cell props
         const {
             width,
             colSpan,
@@ -39,21 +58,58 @@ function mergeCells(
 
         const currentRowId = cells[i]?.props?.rowData?.id;
 
+        // will be removed from the final cell props
+        const {
+            childrenIds = [],
+            expandedRowKeys = [],
+            parentId = undefined,
+            siblingsIds = [],
+            isTree = false,
+
+            ...nativeCellProps
+        } = cells[i].props
+
+        // discarding all the non native props
+        cells[i].props = nativeCellProps
+
         if (!currentRowId && !isHeaderCell)
             throw new Error("No field with id provided");
 
-        const RowCheckbox = () => (
-            isHeaderCell
-                ? <SelectionCheckbox
-                    isHeaderCell={true}
+        const RowCheckbox = () => {
+            // header row
+            if (isHeaderCell)
+                return (
+                    <SelectionCheckbox
+                        variant='header'
+                        onRowSelect={onRowSelect}
+                        isHeaderCell={true}
+                        index={i}
+                    />)
+
+
+            // tree table row
+            if (isTree)
+                return (
+                    <SelectionCheckbox
+                        onRowSelect={onRowSelect}
+                        index={i}
+                        currentRowId={currentRowId}
+                        isTree
+                        parentId={parentId}
+                        childrenIds={childrenIds}
+                        siblingsIds={siblingsIds}
+                        variant='tree'
+                    />)
+
+            // Normal row 
+            return (
+                <SelectionCheckbox
+                    variant='normal'
+                    onRowSelect={onRowSelect}
                     index={i}
-                />
-                : <SelectionCheckbox
-                    index={i}
-                    isHeaderCell={false}
                     currentRowId={currentRowId}
-                />
-        )
+                />)
+        }
 
         // Add grouping to column headers.
         // header cells
@@ -152,13 +208,12 @@ function mergeCells(
                 }
             }
 
-
             nextCells.push(
                 checkboxCol && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
                 cloneCell(cells[i], {
                     width: nextWidth,
                     left: shouldRowRenderCheckbox
-                        ? cells[i].props.left + CHECKBOX_WIDTH
+                        ? cells[i].props.left + CHECKBOX_WIDTH + leftFixedWidth
                         : cells[i].props.left,
                     'aria-colspan': nextWidth > width ? colSpan : undefined,
                     ...additionalProps
@@ -172,7 +227,7 @@ function mergeCells(
             checkboxCol && <RowCheckbox key={`checkbox-${currentRowId}-${i}`} />,
             cloneCell(cells[i], {
                 left: shouldRowRenderCheckbox
-                    ? cells[i]?.props?.left + CHECKBOX_WIDTH
+                    ? cells[i]?.props?.left + CHECKBOX_WIDTH + leftFixedWidth
                     : cells[i]?.props?.left,
                 ...additionalProps
             }));

@@ -56,7 +56,7 @@ import "./less/index.less";
 
 import Pagination from './Pagination';
 import { paginationProps } from './Pagination';
-import { RowSelectionWrapper } from './utils/useRowSelection';
+import { rowSelectionState, RowSelectionWrapper } from './utils/useRowSelection';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {
@@ -263,6 +263,11 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      */
     rowSelection?: boolean;
 
+    /**
+     * Callback function when a row gets selected
+     */
+    onRowSelect?: (state: rowSelectionState) => void
+
     children?:
     | React.ReactNode
     | React.ReactNode[]
@@ -384,6 +389,7 @@ const Table = React.forwardRef(
             rowSelection = false,
             // pagination properties
             pagination,
+            onRowSelect,
 
             ...rest
         } = props;
@@ -763,6 +769,7 @@ const Table = React.forwardRef(
                             >
                                 {mergeCells(resetLeftForCells(fixedLeftCells), {
                                     isDarkMode,
+                                    onRowSelect: onRowSelect,
                                     shouldRenderCheckbox: !rtl && rowSelection
                                 })}
                             </CellGroup>
@@ -771,6 +778,8 @@ const Table = React.forwardRef(
                         <CellGroup>
                             {mergeCells(scrollCells, {
                                 isDarkMode,
+                                leftFixedWidth: fixedLeftCellGroupWidth,
+                                onRowSelect: onRowSelect,
                                 shouldRenderCheckbox: !fixedLeftCellGroupWidth && rowSelection
                             })}
                         </CellGroup>
@@ -789,6 +798,7 @@ const Table = React.forwardRef(
                                 {mergeCells(
                                     resetLeftForCells(fixedRightCells, hasVerticalScrollbar ? SCROLLBAR_WIDTH : 0),
                                     {
+                                        onRowSelect: onRowSelect,
                                         isDarkMode,
                                         shouldRenderCheckbox: rtl && rowSelection
                                     }
@@ -804,6 +814,7 @@ const Table = React.forwardRef(
                     <>
                         <CellGroup>
                             {mergeCells(cells, {
+                                onRowSelect: onRowSelect,
                                 shouldRenderCheckbox: rowSelection
                             })}
                         </CellGroup>
@@ -927,7 +938,33 @@ const Table = React.forwardRef(
             props: TableRowProps & { cellHeight?: number },
             shouldRenderExpandedRow?: boolean
         ) => {
-            const hasChildren = isTree && rowData.children && Array.isArray(rowData.children);
+
+            // handling the nested row condition
+
+            // tree parent
+            const NestedRowData = rowData?.children;
+            const hasChildren = isTree && NestedRowData && (Array.isArray(NestedRowData) && NestedRowData.length > 0);
+            const childrenIds = hasChildren
+                ? (rowData.children as Record<string, any>[]).map((data: Record<string, any>) => data?.id as string)
+                : [];
+
+
+            const treeChildInfo = {
+                parentId: undefined,
+                siblingsIds: [],
+            }
+
+            // first symbol is the parent symbol
+            const symbols = Object.getOwnPropertySymbols(rowData);
+
+            // tree child
+            const rowParent = rowData[symbols[0]]
+            if (rowParent) {
+                treeChildInfo.parentId = rowParent?.id;
+                treeChildInfo.siblingsIds = rowParent?.children?.filter((children: any) => children?.id !== rowData?.id)
+                    .map((siblings: any) => siblings?.id)
+            }
+
             const nextRowKey =
                 rowKey && typeof rowData[rowKey] !== 'undefined' ? rowData[rowKey] : props.key;
 
@@ -978,7 +1015,6 @@ const Table = React.forwardRef(
                 cells.push(
                     React.cloneElement(cell, {
                         'aria-rowspan': rowSpan ? rowSpan : undefined,
-                        hasChildren,
                         rowData,
                         rowIndex: props.rowIndex,
                         wordWrap,
@@ -989,6 +1025,17 @@ const Table = React.forwardRef(
                         rowKey: nextRowKey,
                         expanded,
                         rowSpan,
+
+                        // tree table props
+                        isTree: isTree,
+                        // parent
+                        childrenIds,
+                        hasChildren,
+
+                        // child
+                        ...treeChildInfo,
+
+                        expandedRowKeys,
                         removed: removedCell
                     })
                 );

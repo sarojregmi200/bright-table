@@ -9,7 +9,6 @@ function App() {
 
     useEffect(() => {
         const data = mockNestedData(10);
-        console.log(data)
         setData(data);
         setLoading(false);
     }, []);
@@ -83,6 +82,7 @@ function App() {
         <div>
             <Table
                 rowSelection
+                isTree
                 rowKey={"id"}
                 pagination={{
                     serverResponse,

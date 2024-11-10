@@ -1,74 +1,91 @@
 import React, { MouseEvent, memo } from 'react';
 import Cell from '../Cell';
 import CheckBox from '../utils/checkbox';
-import { useRowSelection } from '../utils/useRowSelection';
+import { rowSelectionState, useRowSelection } from '../utils/useRowSelection';
 
-type HeaderCheckbox = {
+export type BaseCheckboxProps = {
+    index: number;
+    onRowSelect?: (selectionState: rowSelectionState) => void;
+}
+
+export type HeaderCheckbox = {
+    variant: 'header';
     isHeaderCell: true;
     currentRowId?: never;
-}
+} & BaseCheckboxProps
 
-type RowCheckbox = {
-    isHeaderCell: false;
+export type NormalRowCheckbox = {
+    variant: 'normal';
     currentRowId: string;
-}
+} & BaseCheckboxProps
 
-type SelectionCheckboxProps = {
-    index: number;
-} & (HeaderCheckbox | RowCheckbox);
+export type TreeTableCheckbox = {
+    variant: 'tree';
+    isTree: true;
+    siblingsIds: string[];
+    parentId: string;
+    childrenIds: string[];
+    currentRowId: string;
+} & BaseCheckboxProps
 
-const SelectionCheckbox = memo(({
-    isHeaderCell,
-    currentRowId,
-    index,
-    ...otherProps
-}: SelectionCheckboxProps) => {
-    const { setRowSelection, isIdSelected, rowSelection } = useRowSelection();
-    const isRowSelected = isHeaderCell ? false : isIdSelected?.(currentRowId);
+export type SelectionCheckboxProps = HeaderCheckbox | NormalRowCheckbox | TreeTableCheckbox;
+
+const SelectionCheckbox = memo((selectionCheckboxProps: SelectionCheckboxProps) => {
+    const { onRowSelect, currentRowId, variant, ...specificProps } = selectionCheckboxProps;
+
+    const {
+        handleNormalSelection,
+        getRowSelectedStatus,
+        handleTreeRowSelection,
+        handleHeaderSelection,
+    } = useRowSelection();
+
+    const variants = {
+        isHeader: variant === 'header',
+        isNormal: variant === 'normal',
+        isTree: variant === 'tree',
+    };
 
     const handleRowSelection = (e: MouseEvent<HTMLElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (isHeaderCell) {
-            const newAllSelected = !rowSelection.allSelected;
-            setRowSelection({
-                selectedRows: [],
-                allSelected: newAllSelected,
-                isInverseSelection: newAllSelected
-            });
+        if (variants.isHeader) {
+            handleHeaderSelection({ onRowSelect: onRowSelect })
             return;
         }
 
+        if (variants.isTree) {
+            handleTreeRowSelection({
+                onRowSelect: onRowSelect,
+                treeProps: specificProps as TreeTableCheckbox,
+                currentRowId: currentRowId as string,
+            })
+            return;
+        }
 
-        setRowSelection((prevSelectionState: any) => ({
-            ...prevSelectionState,
-            allSelected: false,
-            selectedRows:
-                isRowSelected
-                    ? prevSelectionState.selectedRows.filter((id: string | number) => id !== currentRowId)
-                    : [...prevSelectionState.selectedRows, currentRowId]
-        }));
+        handleNormalSelection({
+            currentRowId: currentRowId as string,
+            onRowSelect
+        })
     };
-
 
     const cellProps = {
         width: 50,
         left: 0,
         className: 'grid place-items-center group',
         onClick: handleRowSelection,
-        ...otherProps
     };
+
+    let isChecked = getRowSelectedStatus({
+        variants,
+        checkboxProps: selectionCheckboxProps
+    });
 
     return (
         <Cell {...cellProps}>
             <CheckBox
-                active={
-                    isHeaderCell
-                        ? rowSelection.allSelected
-                        : rowSelection.isInverseSelection
-                            ? !isRowSelected
-                            : (isRowSelected || rowSelection.allSelected)}
+                active={isChecked}
                 className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
                 onClick={handleRowSelection}
             />
