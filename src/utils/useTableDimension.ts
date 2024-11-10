@@ -37,6 +37,8 @@ interface TableDimensionProps<Row, Key> {
     ) => void;
 }
 
+export const PaginationHeight = 64;
+
 /**
  * The dimension information of the table,
  * including the height, width, scrollable distance and the coordinates of the scroll handle, etc.
@@ -54,7 +56,6 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         affixHeader,
         affixHorizontalScrollbar,
         headerHeight,
-        height: heightProp,
         autoHeight: autoHeightProp,
         minHeight,
         maxHeight,
@@ -66,6 +67,12 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         onTableResizeChange,
         onTableScroll
     } = props;
+
+    // accounting for table top height.
+    const tableNavContainer = document.querySelector("#bt-table-top-nav");
+    const tableNavHeight = tableNavContainer && tableNavContainer.getBoundingClientRect().height || 0;
+
+    let heightProp = props.height ? props.height - PaginationHeight - tableNavHeight : 0;
 
     const contentHeight = useRef(0);
     const contentWidth = useRef(0);
