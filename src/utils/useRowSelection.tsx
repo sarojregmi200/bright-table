@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react"
+import React, { createContext, ReactNode, useContext, useState } from "react"
 import { SelectionCheckboxProps, TreeTableCheckbox } from "../components/SelectionCheckbox"
 
 type selectedRows = ({
@@ -107,6 +107,7 @@ export const useRowSelection = () => {
         const isParent = !isChild && !isNotNested;
 
         setRowSelection((prevRowSelection) => {
+
             // when the clicked checkbox is that of children
             if (isChild) {
                 let updatedState = prevRowSelection
@@ -116,10 +117,17 @@ export const useRowSelection = () => {
                         : data.parentId === parentId) as { parentId: string, childIds: string[] } | undefined
 
                 if (!parent) {
-                    updatedState.selectedRows.push({
-                        parentId: parentId,
-                        childIds: [currentRowId]
-                    })
+                    updatedState = {
+                        ...updatedState,
+                        allSelected: false,
+                        selectedRows: [
+                            ...updatedState.selectedRows,
+                            {
+                                parentId: parentId,
+                                childIds: [currentRowId]
+                            }
+                        ]
+                    }
 
                     onRowSelect?.(updatedState)
 
@@ -134,13 +142,13 @@ export const useRowSelection = () => {
                         : [...parent.childIds, currentRowId as string]
                 }
 
-
                 const parentIndex = updatedState.selectedRows.indexOf(parent)
 
                 updatedState = {
                     ...prevRowSelection,
-                    selectedRows: [
-                        ...prevRowSelection.selectedRows.filter((_, i) => i !== parentIndex),
+                    allSelected: false,
+                    selectedRows: [...prevRowSelection.selectedRows
+                        .filter((_, i) => i !== parentIndex),
                         updatedData]
                 }
 
@@ -174,34 +182,44 @@ export const useRowSelection = () => {
                     // since parent will have parent set to undefined
                     if (obj.parentId === currentRowId)
                         return true;
-                })
+                }) as { parentId: string, childIds: string[] }
 
-                console.log(stateParent)
+                let updatedState: any
 
-                let updatedState = { ...prevRowSelection };
 
-                if (!stateParent)
+                const stateParentIndex = prevRowSelection.selectedRows.indexOf(stateParent);
+                if (!stateParent || (stateParent && stateParent?.childIds?.length === 0)) {
+                    updatedState = {
+                        ...prevRowSelection,
+                        allSelected: false,
+                        selectedRows: [
+                            ...prevRowSelection.selectedRows.filter((_, i) => i !== stateParentIndex),
+                            {
+                                parentId: currentRowId,
+                                childIds: childrenIds
+                            }
+                        ]
+                    }
+                } else {
                     updatedState = {
                         ...prevRowSelection,
                         selectedRows: [
-                            ...prevRowSelection.selectedRows,
-                            ...childrenIds,
-                        ]
+                            ...prevRowSelection.selectedRows.map(ids => {
+                                const nonObj = typeof ids === "string"
+                                if (nonObj)
+                                    return ids;
+
+                                // resetting the children ids without removing the entry
+                                // to better handle the global checkbox and inversion conditions
+                                //
+                                if (ids.parentId === currentRowId)
+                                    return { ...ids, childIds: [] };
+
+                                return ids
+                            })
+                        ],
+                        allSelected: false,
                     }
-
-                else {
-                    updatedState.selectedRows = prevRowSelection.selectedRows.filter(ids => {
-                        const nonObj = typeof ids === "string"
-                        if (nonObj)
-                            return true;
-
-                        // excluding the current parent and taking other
-                        if (ids.parentId === currentRowId)
-                            return false;
-
-                        return true;
-                    })
-
                 }
 
 
@@ -318,16 +336,24 @@ export const useRowSelection = () => {
 
             if (isParent) {
                 const parent = rowSelection.selectedRows.find((parent) =>
-                    typeof parent !== "string" && parent.parentId === parentId
+                    typeof parent !== "string" && parent.parentId === currentRowId
                 ) as { parentId: string, childIds: string[] }
 
-                if (!parent)
-                    return isInversed ? true : false;
-
-                const areAllChildsInState = childrenIds.every((child) => parent?.childIds?.includes(child))
-
                 if (isInversed)
-                    return !areAllChildsInState;
+                {
+                    // if parent is not found then it should be selected.
+                    if(!parent)
+                        return true;
+
+                    // if all children are missing then it should be selected.
+                    const areAllChildMissing = parent.childIds.length === 0;
+                    return areAllChildMissing;
+                }
+
+                //Normal condition
+                const areAllChildsInState = childrenIds.every((child) => {
+                    return parent?.childIds?.includes(child);   
+                })
 
                 return areAllChildsInState;
             }
@@ -335,10 +361,6 @@ export const useRowSelection = () => {
 
         return false;
     }
-
-    useEffect(() => {
-        console.log({ rowSelection })
-    }, [rowSelection])
 
     return {
         rowSelection,
