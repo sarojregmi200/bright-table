@@ -938,11 +938,32 @@ const Table = React.forwardRef(
             props: TableRowProps & { cellHeight?: number },
             shouldRenderExpandedRow?: boolean
         ) => {
+
+            // handling the nested row condition
+
+            // tree parent
             const NestedRowData = rowData?.children;
-            const hasChildren = isTree && NestedRowData && Array.isArray(NestedRowData);
+            const hasChildren = isTree && NestedRowData && (Array.isArray(NestedRowData) && NestedRowData.length > 0);
             const childrenIds = hasChildren
                 ? (rowData.children as Record<string, any>[]).map((data: Record<string, any>) => data?.id as string)
                 : [];
+
+
+            const treeChildInfo = {
+                parentId: undefined,
+                siblingsIds: [],
+            }
+
+            // first symbol is the parent symbol
+            const symbols = Object.getOwnPropertySymbols(rowData);
+
+            // tree child
+            const rowParent = rowData[symbols[0]]
+            if (rowParent) {
+                treeChildInfo.parentId = rowParent?.id;
+                treeChildInfo.siblingsIds = rowParent?.children?.filter((children: any) => children?.id !== rowData?.id)
+                    .map((siblings: any) => siblings?.id)
+            }
 
             const nextRowKey =
                 rowKey && typeof rowData[rowKey] !== 'undefined' ? rowData[rowKey] : props.key;
@@ -994,7 +1015,6 @@ const Table = React.forwardRef(
                 cells.push(
                     React.cloneElement(cell, {
                         'aria-rowspan': rowSpan ? rowSpan : undefined,
-                        hasChildren,
                         rowData,
                         rowIndex: props.rowIndex,
                         wordWrap,
@@ -1005,7 +1025,16 @@ const Table = React.forwardRef(
                         rowKey: nextRowKey,
                         expanded,
                         rowSpan,
+
+                        // tree table props
+                        isTree: isTree,
+                        // parent
                         childrenIds,
+                        hasChildren,
+
+                        // child
+                        ...treeChildInfo,
+
                         expandedRowKeys,
                         removed: removedCell
                     })

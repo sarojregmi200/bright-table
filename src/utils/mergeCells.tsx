@@ -52,7 +52,6 @@ function mergeCells(
             isHeaderCell,
             headerHeight,
             groupHeaderHeight,
-            hasChildren = false,
         } = cells[i].props;
 
         const groupChildren: React.ReactNode[] = [];
@@ -63,6 +62,10 @@ function mergeCells(
         const {
             childrenIds = [],
             expandedRowKeys = [],
+            parentId = undefined,
+            siblingsIds = [],
+            isTree = false,
+
             ...nativeCellProps
         } = cells[i].props
 
@@ -72,21 +75,41 @@ function mergeCells(
         if (!currentRowId && !isHeaderCell)
             throw new Error("No field with id provided");
 
-        const RowCheckbox = () => (
-            isHeaderCell
-                ? <SelectionCheckbox
+        const RowCheckbox = () => {
+            // header row
+            if (isHeaderCell)
+                return (
+                    <SelectionCheckbox
+                        variant='header'
+                        onRowSelect={onRowSelect}
+                        isHeaderCell={true}
+                        index={i}
+                    />)
+
+
+            // tree table row
+            if (isTree)
+                return (
+                    <SelectionCheckbox
+                        onRowSelect={onRowSelect}
+                        index={i}
+                        currentRowId={currentRowId}
+                        isTree
+                        parentId={parentId}
+                        childrenIds={childrenIds}
+                        siblingsIds={siblingsIds}
+                        variant='tree'
+                    />)
+
+            // Normal row 
+            return (
+                <SelectionCheckbox
+                    variant='normal'
                     onRowSelect={onRowSelect}
-                    isHeaderCell={true}
                     index={i}
-                />
-                : <SelectionCheckbox
-                    onRowSelect={onRowSelect}
-                    index={i}
-                    isHeaderCell={false}
                     currentRowId={currentRowId}
-                    hasChildren={hasChildren}
-                />
-        )
+                />)
+        }
 
         // Add grouping to column headers.
         // header cells
