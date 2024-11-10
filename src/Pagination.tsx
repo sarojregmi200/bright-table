@@ -53,7 +53,7 @@ const RowPerPageSwitcher = (props: rowPerPageSwitcherProps) => {
                         className={cn(
                             "cursor-pointer hover:bg-gray-200 text-gray-700 rounded-sm",
                             option == props.selectedOption
-                                ? "bg-[var(--blue-primary-500)] text-white"
+                                ? "bg-[var(--blue-primary-500)] text-white hover:bg-[var(--blue-primary-500)]"
                                 : "RPP-option"
                         )}>
                         {option}
@@ -243,7 +243,7 @@ const Pagination = (props: paginationProps) => {
     }
 
     return (
-        <div className={cn(prefix("container"), "[font-weight:300px] text-[14px] text-gray-600")} >
+        <div className={cn(prefix("container"), "[font-weight:300px] text-[14px] text-gray-600 h-16 w-full")} >
             <div className={prefix("status")}>
                 {statusString}
             </div>
