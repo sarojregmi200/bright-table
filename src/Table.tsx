@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo } from 'react';
+import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo, ReactNode } from 'react';
 import * as ReactIs from 'react-is';
 import { getTranslateDOMPositionXY } from 'dom-lib/esm/translateDOMPositionXY.js';
 import PropTypes from 'prop-types';
@@ -268,6 +268,13 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      */
     onRowSelect?: (state: rowSelectionState) => void
 
+
+    /** Add something at the top of table. Like a navigaiton 
+     * provides data and headers.
+     * example: Search with some filter icons.
+     */
+    renderTableTopNav?: (data: readonly Row[], headers: ReactNode[]) => ReactNode;
+
     children?:
     | React.ReactNode
     | React.ReactNode[]
@@ -390,7 +397,7 @@ const Table = React.forwardRef(
             // pagination properties
             pagination,
             onRowSelect,
-
+            renderTableTopNav,
             ...rest
         } = props;
 
@@ -1223,44 +1230,59 @@ const Table = React.forwardRef(
 
         const renderDefaultPagination = () => {
             if (data.length && pagination)
-                return <Pagination {...pagination} />
+                return (
+                    <div className="paginationWrapper w-full  h-auto  bg-white">
+                        <Pagination {...pagination} />
+                    </div>
+                )
 
             return null;
         }
 
+        const headerProps = (headerCells as any)?.map((header: any) => header.props)
+
         return (
             <RowSelectionWrapper>
                 <TableContext.Provider value={contextValue}>
-                    <div
-                        role={isTree ? 'treegrid' : 'grid'}
-                        // The aria-rowcount is specified on the element with the table.
-                        // Its value is an integer equal to the total number of rows available, including header rows.
-                        aria-rowcount={data.length + 1}
-                        aria-colcount={colCounts.current}
-                        {...rest}
-                        className={classes}
-                        style={styles}
-                        ref={tableRef}
-                        tabIndex={-1}
-                        onKeyDown={onScrollByKeydown}
-                    >
+                    <div className="bt-container">
+                        {renderTableTopNav &&
+                            <div id="bt-table-top-nav" className='w-full h-max'>
+                                {renderTableTopNav(data, headerProps)}
+                            </div>
+                            || null}
+                        <div
+                            className='bt-wrapper relative border border-[var(--border-color)]'
+                            style={styles}>
+                            <div
+                                role={isTree ? 'treegrid' : 'grid'}
+                                // The aria-rowcount is specified on the element with the table.
+                                // Its value is an integer equal to the total number of rows available, including header rows.
+                                aria-rowcount={data.length + 1}
+                                aria-colcount={colCounts.current}
+                                {...rest}
+                                className={classes}
+                                style={{ height: styles.height }}
+                                ref={tableRef}
+                                tabIndex={-1}
+                                onKeyDown={onScrollByKeydown}
+                            >
+                                {showHeader && renderTableHeader(headerCells, rowWidth)}
+                                {children && <RenderTableBody bodyCells={bodyCells} rowWidth={rowWidth} />}
+                            </div>
+                            {pagination ? renderDefaultPagination() : null}
+                            {showHeader && (
+                                <MouseArea
+                                    ref={mouseAreaRef}
+                                    addPrefix={prefix}
+                                    headerHeight={headerHeight}
+                                    height={getTableHeight()}
+                                />
+                            )}
 
-                        {showHeader && renderTableHeader(headerCells, rowWidth)}
-                        {children && <RenderTableBody bodyCells={bodyCells} rowWidth={rowWidth} />}
-
-                        {showHeader && (
-                            <MouseArea
-                                ref={mouseAreaRef}
-                                addPrefix={prefix}
-                                headerHeight={headerHeight}
-                                height={getTableHeight()}
-                            />
-                        )}
-
+                        </div>
                     </div>
-                    {pagination ? renderDefaultPagination() : null}
                 </TableContext.Provider>
-            </RowSelectionWrapper>
+            </RowSelectionWrapper >
         );
     }
 );
