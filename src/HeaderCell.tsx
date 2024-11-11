@@ -25,6 +25,13 @@ export interface HeaderCellProps<Row extends RowDataType, Key extends RowKeyType
     fixed?: boolean | 'left' | 'right';
     children: React.ReactNode;
 
+    /**
+     * Hides the header cell.
+     * And it's data cell.
+    * */
+    isHidden?: boolean;
+
+
     /** @deprecated as unsupported */
     onResize?: (columnWidth?: number, dataKey?: string) => void;
     /** @deprecated as unsupported */
@@ -89,6 +96,7 @@ const HeaderCell = React.forwardRef(
             isDarkMode,
             customizable,
             onHeaderCustomizeClick,
+            isHidden,
             ...rest
         } = props;
 
@@ -112,16 +120,12 @@ const HeaderCell = React.forwardRef(
             }
         }
 
-
-        // TODO: Add a callback function to listen to customize click.
         const renderCustomizeIcon = () => {
             if (customizable && !groupHeader)
-                return <span className='h-5 aspect-square rounded-sm flex items-center justify-center hover:bg-gray-100 cursor-pointer'
+                return (<span className='h-5 aspect-square rounded-sm flex items-center justify-center hover:bg-gray-100 cursor-pointer'
                     onClick={(e) => {
                         onHeaderCustomizeClick?.(props, e as React.MouseEvent)
-                    }}
-
-                >
+                    }} >
                     <svg width="15" height="15" viewBox="0 0 21 21" fill="none" className='rotate-90'>
                         <path
                             d="M5.66666 10.2529C5.66666 11.0029 5.05867 11.6109 4.30867 11.6109C3.55867 11.6109 2.95068 11.0029 2.95068 10.2529C2.95068 9.50295 3.55867 8.89496 4.30867 8.89496C5.05867 8.89496 5.66666 9.50295 5.66666 10.2529Z"
@@ -133,30 +137,33 @@ const HeaderCell = React.forwardRef(
                             d="M12.2172 10.2529C12.2172 11.0029 11.6092 11.6109 10.8592 11.6109C10.1092 11.6109 9.50122 11.0029 9.50122 10.2529C9.50122 9.50295 10.1092 8.89496 10.8592 8.89496C11.6092 8.89496 12.2172 9.50295 12.2172 10.2529Z"
                             fill="currentColor" />
                     </svg>
-                </span>;
+                </span>);
             return null;
         };
 
-        return (
-            <div ref={ref} className={classes}>
-                <Cell
-                    aria-sort={ariaSort}
-                    {...rest}
-                    width={width}
-                    dataKey={dataKey}
-                    left={left}
-                    headerHeight={headerHeight}
-                    isHeaderCell={true}
-                    align={!groupHeader ? align : undefined}
-                    verticalAlign={!groupHeader ? verticalAlign : undefined}
-                >
-                    <div className="wrapper flex items-center justify-between">
-                        {children}
-                        {renderCustomizeIcon()}
-                    </div>
-                </Cell>
-            </div>
-        );
+        if (!isHidden)
+            return (
+                <div ref={ref} className={classes}>
+                    <Cell
+                        aria-sort={ariaSort}
+                        {...rest}
+                        width={width}
+                        dataKey={dataKey}
+                        left={left}
+                        headerHeight={headerHeight}
+                        isHeaderCell={true}
+                        align={!groupHeader ? align : undefined}
+                        verticalAlign={!groupHeader ? verticalAlign : undefined}
+                    >
+                        <div className="wrapper flex items-center justify-between">
+                            {children}
+                            {renderCustomizeIcon()}
+                        </div>
+                    </Cell>
+                </div>
+            );
+
+        return null;
     }
 );
 

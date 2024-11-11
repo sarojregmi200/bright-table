@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo, ReactNode, cloneElement } from 'react';
+import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo, ReactNode, cloneElement, memo } from 'react';
 import * as ReactIs from 'react-is';
 import { getTranslateDOMPositionXY } from 'dom-lib/esm/translateDOMPositionXY.js';
 import PropTypes from 'prop-types';
@@ -78,8 +78,8 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     /** Affix the table horizontal scrollbar to the specified position on the page */
     affixHorizontalScrollbar?: boolean | number;
 
-    /** Show the border of the table 
-     *  @deprecated 
+    /** Show the border of the table
+     *  @deprecated
      *
      *  now defaults to border.
      */
@@ -188,7 +188,7 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      */
     wordWrap?: boolean | 'break-all' | 'break-word' | 'keep-all';
 
-    /** Effectively render large tabular data 
+    /** Effectively render large tabular data
      * Virtualized list is not required for now.
      * Other ways of loading data is being researched.
      * @deprecated
@@ -269,13 +269,12 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     onRowSelect?: (state: rowSelectionState) => void
 
 
-    /** Add something at the top of table. Like a navigaiton 
-     * provides data and headers.
-     * Add something at the top of table. Like a navigaiton 
-     * provides data and headersProps.
+    /**
+     * Add something at the top of table.Like a navigaiton
+     * provides  headersProps.
      * example: Search with some filter icons.
      */
-    renderTableTopNav?: (data: readonly Row[], headers: Record<string, any>[]) => ReactNode;
+    renderTableTopNav?: (headers: Record<string, any>[], isTree: boolean) => ReactNode;
 
     /**
      * Header customize btn click function.
@@ -340,6 +339,21 @@ const getChildrenProps = {
     Column,
     ColumnGroup
 };
+
+// Move TableTopNav outside the main component
+const TableTopNav = memo(({ renderTableTopNav, headerProps, isTree }: {
+    renderTableTopNav?: (headers: Record<string, any>[], isTree: boolean) => ReactNode,
+    headerProps: Record<string, any>[],
+    isTree: boolean
+}) => {
+    return renderTableTopNav
+        ? (
+            <div id="bt-table-top-nav" className='w-full h-max'>
+                {renderTableTopNav(headerProps, isTree)}
+            </div>
+        )
+        : null;
+});
 
 const Table = React.forwardRef(
     <Row extends RowDataType, Key extends RowKeyType>(props: TableProps<Row, Key>, ref) => {
@@ -1265,17 +1279,21 @@ const Table = React.forwardRef(
             return null;
         }
 
-        const headerProps = (headerCells as any)?.map((header: any) => header.props)
+        // Memoize headerProps
+        const headerProps = useMemo(() =>
+            (headerCells as any)?.map((header: any) => header.props),
+            [headerCells] // Only recalculate if headerCells changes
+        );
 
         return (
             <RowSelectionWrapper>
                 <TableContext.Provider value={contextValue}>
-                    <div className="bt-container">
-                        {renderTableTopNav &&
-                            <div id="bt-table-top-nav" className='w-full h-max'>
-                                {renderTableTopNav(data, headerProps)}
-                            </div>
-                            || null}
+                    <div className="bt-container space-y-2.5">
+                        <TableTopNav
+                            isTree={isTree || false}
+                            renderTableTopNav={renderTableTopNav}
+                            headerProps={headerProps}
+                        />
                         <div
                             className='bt-wrapper relative border border-[var(--border-color)]'
                             style={styles}>
