@@ -429,7 +429,6 @@ const Table = React.forwardRef(
             [getChildren]
         );
 
-
         const isAutoHeight = useMemo(() => autoHeight && !maxHeight, [autoHeight, maxHeight]);
 
         const {
@@ -724,8 +723,6 @@ const Table = React.forwardRef(
             [prefix, renderRowExpandedProp, rowExpandedHeight]
         );
 
-        let hiddenCols: number[] = [];
-
         const renderRow = (
             props: TableRowProps,
             cells: any[],
@@ -735,15 +732,8 @@ const Table = React.forwardRef(
             const { depth, rowIndex, ...restRowProps } = props;
 
             if (props.isHeaderRow) {
-                hiddenCols = cells.filter((cell) => {
-                    const isHidden = cell?.props?.isHidden;
-                    return isHidden
-                }).map((cells) => cells?.props?.["aria-colindex"]);
 
-                cells = cells.filter(cell => {
-                    const cellColId = cell?.props?.["aria-colindex"];
-                    return !hiddenCols.includes(cellColId);
-                }).map((cell) => {
+                cells = cells.map((cell) => {
 
                     const isCustomizable = cell?.props?.customizable;
                     const hasOnHeaderCustomizeClick = cell?.props?.onHeaderCustomizeClick;
@@ -776,11 +766,6 @@ const Table = React.forwardRef(
                 rowStyles.right = rowRight;
             }
 
-            // removing the cells with hidden header
-            cells = cells.filter(cell => {
-                const cellColId = cell?.props?.["aria-colindex"];
-                return !hiddenCols.includes(cellColId);
-            })
 
             let rowNode: React.ReactNode = null;
 
@@ -1081,9 +1066,6 @@ const Table = React.forwardRef(
                     ? true
                     : false;
 
-                const colIndex = cell.props?.["aria-colindex"];
-                const isHidden = hiddenCols.includes(colIndex)
-
                 cells.push(
                     React.cloneElement(cell, {
                         'aria-rowspan': rowSpan ? rowSpan : undefined,
@@ -1108,7 +1090,7 @@ const Table = React.forwardRef(
                         ...treeChildInfo,
 
                         expandedRowKeys,
-                        removed: isHidden || removedCell
+                        removed: removedCell
                     })
                 );
             }

@@ -291,12 +291,6 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         };
     });
 
-    // listenng for children change
-    useUpdateLayoutEffect(() => {
-        calculateTableContentWidth();
-        calculateTableWidth();
-    }, [children]);
-
     useUpdateLayoutEffect(() => {
         calculateTableHeight();
         calculateTableContextHeight();
