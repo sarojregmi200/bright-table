@@ -176,6 +176,8 @@ const useCellDescriptor = <Row extends RowDataType>(
     let left = 0; // Cell left margin
     const headerCells: React.ReactNode[] = []; // Table header cell
     const bodyCells: React.ReactNode[] = []; // Table body cell
+    const rightPinnedCols: React.ReactElement[] = [];
+    const unpinnedCols: React.ReactElement[] = [];
 
     if (!children) {
         const cacheCell = {
@@ -194,7 +196,24 @@ const useCellDescriptor = <Row extends RowDataType>(
     const count = columns.length;
     const { totalFlexGrow, totalWidth } = getTotalByColumns<Row>(columns);
 
-    React.Children.forEach(columns, (column: React.ReactElement<ColumnProps<Row>>, index) => {
+    const extractCellInfo = (column: React.ReactElement<ColumnProps<Row>>, index: number, ignorePinCheck = false) => {
+        const isHidden = column.props.isHidden;
+        if (isHidden)
+            return;
+
+        const isRightPinned = column.props.fixed === "right";
+        const isLeftPinned = column.props.fixed === "left" || column.props.fixed;
+
+        if (isRightPinned && !ignorePinCheck) {
+            rightPinnedCols.push(column);
+            return;
+        }
+
+        if (!isLeftPinned && !rightPinnedCols && !ignorePinCheck) {
+            unpinnedCols.push(column);
+            return;
+        }
+
         if (React.isValidElement(column)) {
             const columnChildren = column.props.children as React.ReactNode[];
             const columnProps = getColumnProps(column);
@@ -295,6 +314,17 @@ const useCellDescriptor = <Row extends RowDataType>(
 
             left += cellWidth;
         }
+    }
+
+    // left pinned
+    React.Children.forEach(columns, extractCellInfo);
+
+    React.Children.forEach(unpinnedCols, (column, i) => {
+        extractCellInfo(column, i, true)
+    });
+
+    React.Children.forEach(rightPinnedCols, (column, i) => {
+        extractCellInfo(column, i, true)
     });
 
     const cacheCell: CellDescriptor = {
@@ -305,7 +335,7 @@ const useCellDescriptor = <Row extends RowDataType>(
         hasCustomTreeCol
     };
 
-    setCacheData(cacheCell);
+    // setCacheData(cacheCell);
 
     return cacheCell;
 };

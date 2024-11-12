@@ -6,6 +6,9 @@ import { larvelPaginationObject } from "../../dist/types/src/Pagination";
 function App() {
     const [data, setData] = useState<data[]>([]);
     const [loading, setLoading] = useState(true);
+    const [pin, setPin] = useState(false);
+
+    console.log(pin)
 
     useEffect(() => {
         const data = mockNestedData(10);
@@ -103,12 +106,12 @@ function App() {
                     console.log(rowData);
                 }}
             >
-                <Column width={60} align="center" fixed>
-                    <HeaderCell>Id</HeaderCell>
+                <Column width={60} align="center" fixed={"left"} >
+                    <HeaderCell >Id</HeaderCell>
                     <Cell dataKey="id" />
                 </Column>
 
-                <Column width={150}>
+                <Column width={250} fixed={pin ? "right" : false} >
                     <HeaderCell>First Name</HeaderCell>
                     <Cell dataKey="firstname" />
                 </Column>
@@ -150,8 +153,20 @@ function App() {
                 </Column>
 
             </Table>
+
+
+            <div className="pincol absolute bottom-10 right-10">
+                <button onClick={() => { setPin(prev => !prev) }}>
+                    pincol
+                </button>
+
+            </div>
         </div>
     )
 }
 
 export default App
+
+
+
+

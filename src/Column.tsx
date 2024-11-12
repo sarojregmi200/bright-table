@@ -44,6 +44,8 @@ export interface ColumnProps<Row extends RowDataType> {
 
     /** Callback function for resize the colum */
     onResize?: (columnWidth?: number, dataKey?: string) => void;
+
+    isHidden?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -68,6 +68,7 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         onTableScroll
     } = props;
 
+
     // accounting for table top height.
     const tableNavContainer = document.querySelector("#bt-table-top-nav");
     const tableNavHeight = tableNavContainer && tableNavContainer.getBoundingClientRect().height || 0;
@@ -289,6 +290,12 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
             containerResizeObserver.current?.disconnect();
         };
     });
+
+    // listenng for children change
+    useUpdateLayoutEffect(() => {
+        calculateTableContentWidth();
+        calculateTableWidth();
+    }, [children]);
 
     useUpdateLayoutEffect(() => {
         calculateTableHeight();

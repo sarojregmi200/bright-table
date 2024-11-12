@@ -28,11 +28,14 @@ function mergeCells(
         ...additionalProps
     } = props;
 
+
     // this map is done to make props read/write from read only
     cells = cells.map((cell: any) => {
         return {
             ...cell,
-            props: cell.props
+            props: {
+                ...cell.props,
+            },
         }
     })
 

@@ -429,6 +429,7 @@ const Table = React.forwardRef(
             [getChildren]
         );
 
+
         const isAutoHeight = useMemo(() => autoHeight && !maxHeight, [autoHeight, maxHeight]);
 
         const {
@@ -553,6 +554,7 @@ const Table = React.forwardRef(
             onTableScroll: debounce((coords: { x?: number; y?: number }) => onScrollTo(coords), 100),
             onTableResizeChange: handleTableResizeChange
         });
+
 
         useAffix({
             getTableHeight,
@@ -722,6 +724,8 @@ const Table = React.forwardRef(
             [prefix, renderRowExpandedProp, rowExpandedHeight]
         );
 
+        let hiddenCols: number[] = [];
+
         const renderRow = (
             props: TableRowProps,
             cells: any[],
@@ -731,7 +735,16 @@ const Table = React.forwardRef(
             const { depth, rowIndex, ...restRowProps } = props;
 
             if (props.isHeaderRow) {
-                cells = cells.map((cell) => {
+                hiddenCols = cells.filter((cell) => {
+                    const isHidden = cell?.props?.isHidden;
+                    return isHidden
+                }).map((cells) => cells?.props?.["aria-colindex"]);
+
+                cells = cells.filter(cell => {
+                    const cellColId = cell?.props?.["aria-colindex"];
+                    return !hiddenCols.includes(cellColId);
+                }).map((cell) => {
+
                     const isCustomizable = cell?.props?.customizable;
                     const hasOnHeaderCustomizeClick = cell?.props?.onHeaderCustomizeClick;
 
@@ -762,6 +775,12 @@ const Table = React.forwardRef(
                 rowRight = tableWidth.current - contentWidth.current;
                 rowStyles.right = rowRight;
             }
+
+            // removing the cells with hidden header
+            cells = cells.filter(cell => {
+                const cellColId = cell?.props?.["aria-colindex"];
+                return !hiddenCols.includes(cellColId);
+            })
 
             let rowNode: React.ReactNode = null;
 
@@ -794,11 +813,13 @@ const Table = React.forwardRef(
                     } else {
                         scrollCells.push(cell);
                     }
+
                 }
 
                 if (hasVerticalScrollbar && fixedRightCellGroupWidth) {
                     fixedRightCellGroupWidth += SCROLLBAR_WIDTH;
                 }
+
 
 
                 rowNode = (
@@ -869,6 +890,7 @@ const Table = React.forwardRef(
                     </>
                 );
             }
+
 
             return (
                 <Row {...restRowProps} data-depth={depth} style={rowStyles}>
@@ -967,6 +989,7 @@ const Table = React.forwardRef(
                     nextExpandedRowKeys.push(treeRowKey);
                 }
 
+
                 setExpandedRowKeys(nextExpandedRowKeys);
                 onExpandChange?.(!open, rowData);
             },
@@ -1054,10 +1077,12 @@ const Table = React.forwardRef(
                 }
 
                 // Cells marked as deleted when checking for merged cell.
-                const removedCell =
-                    cell.props?.rowSpan && !rowSpan && rowSpanState.current[cellKey]?.[0] !== 0
-                        ? true
-                        : false;
+                const removedCell = cell.props?.rowSpan && !rowSpan && rowSpanState.current[cellKey]?.[0] !== 0
+                    ? true
+                    : false;
+
+                const colIndex = cell.props?.["aria-colindex"];
+                const isHidden = hiddenCols.includes(colIndex)
 
                 cells.push(
                     React.cloneElement(cell, {
@@ -1083,7 +1108,7 @@ const Table = React.forwardRef(
                         ...treeChildInfo,
 
                         expandedRowKeys,
-                        removed: removedCell
+                        removed: isHidden || removedCell
                     })
                 );
             }
