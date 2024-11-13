@@ -35,9 +35,15 @@ interface TableDimensionProps<Row, Key> {
         prevSize: number,
         event: 'bodyHeightChanged' | 'bodyWidthChanged' | 'widthChanged' | 'heightChanged'
     ) => void;
+
+    // additional height/width may be added if present.
+    hasRowSelection?: boolean;
+    hasPagination?: boolean;
 }
 
-export const PaginationHeight = 64;
+// 2px is for the border to be display; 
+export const PAGINATION_HEIGHT = 64 + 2;
+export const ROW_SELECTION_COL_WIDTH = 50 + 2;
 
 /**
  * The dimension information of the table,
@@ -52,7 +58,8 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         tableRef,
         headerWrapperRef,
         prefix,
-        width: widthProp,
+        width,
+        height,
         affixHeader,
         affixHorizontalScrollbar,
         headerHeight,
@@ -65,15 +72,22 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         showHeader,
         bordered,
         onTableResizeChange,
-        onTableScroll
+        onTableScroll,
+        hasRowSelection,
+        hasPagination,
     } = props;
-
 
     // accounting for table top height.
     const tableNavContainer = document.querySelector("#bt-table-top-nav");
     const tableNavHeight = tableNavContainer && tableNavContainer.getBoundingClientRect().height || 0;
 
-    let heightProp = props.height ? props.height - PaginationHeight - tableNavHeight : 0;
+    let heightProp = 0
+    let widthProp = 0
+    if (height)
+        heightProp = height + (hasPagination ? PAGINATION_HEIGHT : 0) + tableNavHeight
+
+    if (width)
+        widthProp = width + (hasRowSelection ? ROW_SELECTION_COL_WIDTH : 0);
 
     const contentHeight = useRef(0);
     const contentWidth = useRef(0);
@@ -81,8 +95,8 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
     const scrollY = useRef(0);
     const scrollX = useRef(0);
     const minScrollX = useRef(0);
-    const tableWidth = useRef(widthProp || 0);
-    const tableHeight = useRef(heightProp || 0);
+    const tableWidth = useRef(widthProp);
+    const tableHeight = useRef(heightProp);
     const columnCount = useRef(0);
     const resizeObserver = useRef<ResizeObserver>();
     const containerResizeObserver = useRef<ResizeObserver>();

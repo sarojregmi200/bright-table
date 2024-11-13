@@ -132,6 +132,7 @@ const Pagination = (props: paginationProps) => {
         }
     } = props;
 
+    // if there is only one link to paginate it is not shown here.
     if (!serverResponse || (serverResponse && serverResponse.links.length < 4))
         return;
 

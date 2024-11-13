@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo, ReactNode, cloneElement, memo } from 'react';
+import React, { useRef, useCallback, useImperativeHandle, useReducer, useMemo, ReactNode, cloneElement, memo, forwardRef, ForwardedRef } from 'react';
 import * as ReactIs from 'react-is';
 import { getTranslateDOMPositionXY } from 'dom-lib/esm/translateDOMPositionXY.js';
 import PropTypes from 'prop-types';
@@ -57,6 +57,7 @@ import "./less/index.less";
 import Pagination from './Pagination';
 import { paginationProps } from './Pagination';
 import { rowSelectionState, RowSelectionWrapper } from './utils/useRowSelection';
+import { PAGINATION_HEIGHT } from './utils/useTableDimension';
 
 export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<StandardProps, 'onScroll' | 'children'> {
@@ -340,20 +341,22 @@ const getChildrenProps = {
     ColumnGroup
 };
 
-// Move TableTopNav outside the main component
-const TableTopNav = memo(({ renderTableTopNav, headerProps, isTree }: {
+type TableTopNav = {
     renderTableTopNav?: (headers: Record<string, any>[], isTree: boolean) => ReactNode,
     headerProps: Record<string, any>[],
     isTree: boolean
-}) => {
+}
+
+// Move TableTopNav outside the main component
+const TableTopNav = memo(forwardRef(({ renderTableTopNav, headerProps, isTree }: TableTopNav, ref: ForwardedRef<HTMLDivElement>) => {
     return renderTableTopNav
         ? (
-            <div id="bt-table-top-nav" className='w-full h-max'>
+            <div id="bt-table-top-nav" className='w-full h-max' ref={ref}>
                 {renderTableTopNav(headerProps, isTree)}
             </div>
         )
         : null;
-});
+}));
 
 const Table = React.forwardRef(
     <Row extends RowDataType, Key extends RowKeyType>(props: TableProps<Row, Key>, ref) => {
@@ -700,6 +703,21 @@ const Table = React.forwardRef(
             height: getTableHeight(),
             ...style
         };
+
+        const tableTopNavRef = useRef<HTMLDivElement>(null);
+
+        let ActualTableHeight = styles?.height as number;
+        let TableHeightWithPagination = styles?.height as number;
+
+        if (pagination)
+            ActualTableHeight -= PAGINATION_HEIGHT
+
+        if (renderTableTopNav) {
+            const tableTopNavHeight = tableTopNavRef.current?.getBoundingClientRect().height;
+            ActualTableHeight -= tableTopNavHeight ?? 0;
+            TableHeightWithPagination -= tableTopNavHeight ?? 0;
+        }
+
 
         const renderRowExpanded = useCallback(
             (rowData?: Row) => {
@@ -1140,8 +1158,7 @@ const Table = React.forwardRef(
 
 
         const RenderTableBody = ({ bodyCells, rowWidth }: { bodyCells: any[], rowWidth: number }) => {
-            const height = getTableHeight();
-            const bodyHeight = height - headerHeight;
+            const bodyHeight = ActualTableHeight - headerHeight;
             const bodyStyles = {
                 top: headerHeight,
                 height: bodyHeight
@@ -1278,7 +1295,7 @@ const Table = React.forwardRef(
         const renderDefaultPagination = () => {
             if (data.length && pagination)
                 return (
-                    <div className="paginationWrapper w-full  h-auto  bg-white">
+                    <div className="paginationWrapper w-full h-16 bg-white">
                         <Pagination {...pagination} />
                     </div>
                 )
@@ -1295,15 +1312,27 @@ const Table = React.forwardRef(
         return (
             <RowSelectionWrapper>
                 <TableContext.Provider value={contextValue}>
-                    <div className="bt-container space-y-2.5">
+                    <div
+                        className="bt-container space-y-2.5 overflow-hidden"
+                        style={{
+                            height: style?.height,
+                            width: style?.width
+                        }}
+                    >
                         <TableTopNav
+                            ref={tableTopNavRef}
                             isTree={isTree || false}
                             renderTableTopNav={renderTableTopNav}
                             headerProps={headerProps}
                         />
+
                         <div
                             className='bt-wrapper relative border border-[var(--border-color)]'
-                            style={styles}>
+                            style={{
+                                width: styles.width,
+                                height: TableHeightWithPagination,
+                                ...style
+                            }}>
                             <div
                                 role={isTree ? 'treegrid' : 'grid'}
                                 // The aria-rowcount is specified on the element with the table.
@@ -1312,7 +1341,7 @@ const Table = React.forwardRef(
                                 aria-colcount={colCounts.current}
                                 {...rest}
                                 className={classes}
-                                style={{ height: styles.height }}
+                                style={{ height: ActualTableHeight, width: styles?.width }}
                                 ref={tableRef}
                                 tabIndex={-1}
                                 onKeyDown={onScrollByKeydown}
@@ -1326,7 +1355,7 @@ const Table = React.forwardRef(
                                     ref={mouseAreaRef}
                                     addPrefix={prefix}
                                     headerHeight={headerHeight}
-                                    height={getTableHeight()}
+                                    height={ActualTableHeight}
                                 />
                             )}
 
