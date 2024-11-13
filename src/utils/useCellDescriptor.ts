@@ -206,12 +206,12 @@ const useCellDescriptor = <Row extends RowDataType>(
         if (isHidden)
             return;
 
-        const isRightPinned = column.props.fixed === "right";
-        const isLeftPinned = column.props.fixed === "left" || column.props.fixed;
-        const isUnpinned = !isLeftPinned && !isRightPinned;
+        const isCurrentRightPinned = column.props.fixed === "right";
+        const isCurrentLeftPinned = column.props.fixed === "left" || column.props.fixed;
+        const isCurrentUnpinned = !isCurrentLeftPinned && !isCurrentRightPinned;
 
-        const ignoreRightPinned = isRightPinned && !ignorePinCheck;
-        const ignoreUnpinned = isUnpinned && !ignorePinCheck;
+        const ignoreRightPinned = isCurrentRightPinned && !ignorePinCheck;
+        const ignoreUnpinned = isCurrentUnpinned && !ignorePinCheck;
 
         if (ignoreRightPinned) {
             rightPinnedCols.push(column);
@@ -279,13 +279,26 @@ const useCellDescriptor = <Row extends RowDataType>(
             cellWidth = resizable ? currentWidth || grewWidth : grewWidth;
         }
 
-        let uniqueKey = `un-${index}`;
+        let uniqueKey = `left-${index}`;
+        let isFirstCol = index === 0;
+        let isLastCol = index === count - 1
 
-        if (isRightPinned)
+        if (isCurrentRightPinned) {
             uniqueKey = `right-${index}`
+            isFirstCol = false
+        }
 
-        if (isLeftPinned)
-            uniqueKey = `left-${index}`;
+        if (isCurrentUnpinned) {
+            const isLeftPinPresent = columns.some((col) => col.props?.fixed === "left" || col.props?.fixed || false);
+
+            if (isLeftPinPresent)
+                isFirstCol = false
+            else
+                isFirstCol = index === 0
+
+            uniqueKey = `un-${index}`;
+        }
+
 
         const cellProps = {
             ...omit(columnProps, ['children']),
@@ -295,8 +308,8 @@ const useCellDescriptor = <Row extends RowDataType>(
             key: uniqueKey,
             width: isControlled ? width : cellWidth,
             height: typeof rowHeight === 'function' ? rowHeight() : rowHeight,
-            firstColumn: index === 0,
-            lastColumn: index === count - 1
+            firstColumn: isFirstCol,
+            lastColumn: isLastCol
         };
 
         if (showHeader && headerHeight) {
