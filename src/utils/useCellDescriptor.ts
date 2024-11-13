@@ -176,8 +176,6 @@ const useCellDescriptor = <Row extends RowDataType>(
     let left = 0; // Cell left margin
     const headerCells: React.ReactNode[] = []; // Table header cell
     const bodyCells: React.ReactNode[] = []; // Table body cell
-    const rightPinnedCols: React.ReactElement[] = [];
-    const unpinnedCols: React.ReactElement[] = [];
 
     if (!children) {
         const cacheCell = {
@@ -192,128 +190,145 @@ const useCellDescriptor = <Row extends RowDataType>(
         return cacheCell;
     }
 
+    const rightPinnedCols: React.ReactElement[] = [];
+    const unpinnedCols: React.ReactElement[] = [];
+
     const columns = getTableColumns(children) as React.ReactElement[];
     const count = columns.length;
     const { totalFlexGrow, totalWidth } = getTotalByColumns<Row>(columns);
 
     const extractCellInfo = (column: React.ReactElement<ColumnProps<Row>>, index: number, ignorePinCheck = false) => {
+
+        if (!React.isValidElement(column))
+            return
+
         const isHidden = column.props.isHidden;
         if (isHidden)
             return;
 
         const isRightPinned = column.props.fixed === "right";
         const isLeftPinned = column.props.fixed === "left" || column.props.fixed;
+        const isUnpinned = !isLeftPinned && !isRightPinned;
 
-        if (isRightPinned && !ignorePinCheck) {
+        const ignoreRightPinned = isRightPinned && !ignorePinCheck;
+        const ignoreUnpinned = isUnpinned && !ignorePinCheck;
+
+        if (ignoreRightPinned) {
             rightPinnedCols.push(column);
             return;
         }
 
-        if (!isLeftPinned && !rightPinnedCols && !ignorePinCheck) {
+        if (ignoreUnpinned) {
             unpinnedCols.push(column);
             return;
         }
 
-        if (React.isValidElement(column)) {
-            const columnChildren = column.props.children as React.ReactNode[];
-            const columnProps = getColumnProps(column);
+        const columnChildren = column.props.children as React.ReactNode[];
+        const columnProps = getColumnProps(column);
 
-            const { width, resizable, flexGrow, minWidth, onResize, treeCol } = columnProps;
+        const { width, resizable, flexGrow, minWidth, onResize, treeCol } = columnProps;
 
-            if (treeCol) {
-                hasCustomTreeCol = true;
-            }
+        if (treeCol) {
+            hasCustomTreeCol = true;
+        }
 
-            if (columnChildren.length !== 2) {
-                throw new Error(`Component <HeaderCell> and <Cell> is required, column index: ${index} `);
-            }
+        if (columnChildren.length !== 2) {
+            throw new Error(`Component <HeaderCell> and <Cell> is required, column index: ${index} `);
+        }
 
-            const headerCell = columnChildren[0] as React.ReactElement;
-            const cell = columnChildren[1] as React.ReactElement;
+        const headerCell = columnChildren[0] as React.ReactElement;
+        const cell = columnChildren[1] as React.ReactElement;
 
-            const cellWidthId = `${cell.props.dataKey}_${index}_width`;
+        const cellWidthId = `${cell.props.dataKey}_${index}_width`;
 
-            // get column width from cache.
-            const initialColumnWidth = initialColumnWidths.current?.[cellWidthId];
+        // get column width from cache.
+        const initialColumnWidth = initialColumnWidths.current?.[cellWidthId];
 
-            const currentWidth = columnWidths.current?.[cellWidthId];
+        const currentWidth = columnWidths.current?.[cellWidthId];
 
-            let cellWidth = currentWidth || width || 0;
+        let cellWidth = currentWidth || width || 0;
 
-            const isControlled = typeof width === 'number' && typeof onResize === 'function';
+        const isControlled = typeof width === 'number' && typeof onResize === 'function';
 
+        /**
+         * in resizable mode,
+         *    if width !== initialColumnWidth, use current column width and update cache.
+         */
+        if (resizable && (initialColumnWidth || width) && initialColumnWidth !== width) {
+            // initial or update initialColumnWidth cache.
+            initialColumnWidths.current[cellWidthId] = width;
             /**
-             * in resizable mode,
-             *    if width !== initialColumnWidth, use current column width and update cache.
+             * if currentWidth exist, update columnWidths cache.
              */
-            if (resizable && (initialColumnWidth || width) && initialColumnWidth !== width) {
-                // initial or update initialColumnWidth cache.
-                initialColumnWidths.current[cellWidthId] = width;
-                /**
-                 * if currentWidth exist, update columnWidths cache.
-                 */
-                if (currentWidth) {
-                    columnWidths.current[cellWidthId] = width;
-                    // update cellWidth
-                    cellWidth = width;
-                }
+            if (currentWidth) {
+                columnWidths.current[cellWidthId] = width;
+                // update cellWidth
+                cellWidth = width;
             }
+        }
 
-            if (tableWidth.current && flexGrow && totalFlexGrow) {
-                const grewWidth = Math.max(
-                    ((tableWidth.current - totalWidth) / totalFlexGrow) * flexGrow,
-                    minWidth || 60
-                );
-                /**
-                 * resizable = false, width will be recalc when table render.
-                 * resizable = true, only first render will use grewWidth.
-                 */
-                cellWidth = resizable ? currentWidth || grewWidth : grewWidth;
-            }
+        if (tableWidth.current && flexGrow && totalFlexGrow) {
+            const grewWidth = Math.max(
+                ((tableWidth.current - totalWidth) / totalFlexGrow) * flexGrow,
+                minWidth || 60
+            );
+            /**
+             * resizable = false, width will be recalc when table render.
+             * resizable = true, only first render will use grewWidth.
+             */
+            cellWidth = resizable ? currentWidth || grewWidth : grewWidth;
+        }
 
-            const cellProps = {
-                ...omit(columnProps, ['children']),
-                'aria-colindex': index + 1,
-                left,
-                headerHeight,
-                key: index,
-                width: isControlled ? width : cellWidth,
-                height: typeof rowHeight === 'function' ? rowHeight() : rowHeight,
-                firstColumn: index === 0,
-                lastColumn: index === count - 1
+        let uniqueKey = `un-${index}`;
+
+        if (isRightPinned)
+            uniqueKey = `right-${index}`
+
+        if (isLeftPinned)
+            uniqueKey = `left-${index}`;
+
+        const cellProps = {
+            ...omit(columnProps, ['children']),
+            'aria-colindex': index + 1,
+            left,
+            headerHeight,
+            key: uniqueKey,
+            width: isControlled ? width : cellWidth,
+            height: typeof rowHeight === 'function' ? rowHeight() : rowHeight,
+            firstColumn: index === 0,
+            lastColumn: index === count - 1
+        };
+
+        if (showHeader && headerHeight) {
+            const headerCellProps = {
+                // Resizable column
+                // `index` is used to define the serial number when dragging the column width
+                index,
+                dataKey: cell.props.dataKey,
+                isHeaderCell: true,
+                minWidth: columnProps.minWidth,
+                sortable: columnProps.sortable,
+                onSortColumn: handleSortColumn,
+                sortType,
+                sortColumn,
+                flexGrow: resizable ? undefined : flexGrow
             };
 
-            if (showHeader && headerHeight) {
-                const headerCellProps = {
-                    // Resizable column
-                    // `index` is used to define the serial number when dragging the column width
-                    index,
-                    dataKey: cell.props.dataKey,
-                    isHeaderCell: true,
-                    minWidth: columnProps.minWidth,
-                    sortable: columnProps.sortable,
-                    onSortColumn: handleSortColumn,
-                    sortType,
-                    sortColumn,
-                    flexGrow: resizable ? undefined : flexGrow
-                };
-
-                if (resizable) {
-                    merge(headerCellProps, {
-                        onResize,
-                        onColumnResizeEnd: handleColumnResizeEnd,
-                        onColumnResizeStart: handleColumnResizeStart,
-                        onColumnResizeMove: handleColumnResizeMove
-                    });
-                }
-
-                headerCells.push(React.cloneElement(headerCell, { ...cellProps, ...headerCellProps }));
+            if (resizable) {
+                merge(headerCellProps, {
+                    onResize,
+                    onColumnResizeEnd: handleColumnResizeEnd,
+                    onColumnResizeStart: handleColumnResizeStart,
+                    onColumnResizeMove: handleColumnResizeMove
+                });
             }
 
-            bodyCells.push(React.cloneElement(cell, cellProps));
-
-            left += cellWidth;
+            headerCells.push(React.cloneElement(headerCell, { ...cellProps, ...headerCellProps }));
         }
+
+        bodyCells.push(React.cloneElement(cell, cellProps));
+
+        left += cellWidth;
     }
 
     // left pinned
@@ -335,7 +350,7 @@ const useCellDescriptor = <Row extends RowDataType>(
         hasCustomTreeCol
     };
 
-    // setCacheData(cacheCell);
+    setCacheData(cacheCell);
 
     return cacheCell;
 };
