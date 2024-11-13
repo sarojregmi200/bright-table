@@ -101,7 +101,7 @@ function App() {
                 shouldUpdateScroll={false}
                 data={data}
                 cellBordered
-                height={10 * 46}
+                height={innerHeight}
                 onRowClick={rowData => {
                     console.log(rowData);
                 }}
@@ -154,12 +154,10 @@ function App() {
 
             </Table>
 
-
-            <div className="pincol absolute bottom-10 right-10">
+            <div className="pincol">
                 <button onClick={() => { setPin(prev => !prev) }}>
                     pincol
                 </button>
-
             </div>
         </div>
     )
