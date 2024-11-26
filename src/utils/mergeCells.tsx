@@ -28,17 +28,6 @@ function mergeCells(
         ...additionalProps
     } = props;
 
-
-    // this map is done to make props read/write from read only
-    cells = cells.map((cell: any) => {
-        return {
-            ...cell,
-            props: {
-                ...cell.props,
-            },
-        }
-    })
-
     let checkboxCol = false;
 
     for (let i = 0; i < cells.length; i += 1) {
@@ -68,12 +57,15 @@ function mergeCells(
             parentId = undefined,
             siblingsIds = [],
             isTree = false,
-
+            isDarkMode,
             ...nativeCellProps
         } = cells[i].props
 
         // discarding all the non native props
-        cells[i].props = nativeCellProps
+        cells[i] = {
+            ...cells[i],
+            props: nativeCellProps
+        }
 
         if (!currentRowId && !isHeaderCell)
             throw new Error("No field with id provided");

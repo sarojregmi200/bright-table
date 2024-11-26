@@ -1,4 +1,4 @@
-import { Cell, Column, HeaderCell, Table } from "bright-table"
+import { Cell, Column, ColumnGroup, HeaderCell, Table } from "../../dist/src/index"
 import { data, mockNestedData, } from "./faker";
 import { useEffect, useState } from "react";
 import { larvelPaginationObject } from "../../dist/types/src/Pagination";
@@ -111,15 +111,18 @@ function App() {
                     <Cell dataKey="id" />
                 </Column>
 
-                <Column width={250} fixed={pin ? "right" : false} >
-                    <HeaderCell>First Name</HeaderCell>
-                    <Cell dataKey="firstname" />
-                </Column>
+                <ColumnGroup header="User Name">
+                    <Column width={250} fixed={pin ? "right" : false} >
+                        <HeaderCell>First Name</HeaderCell>
+                        <Cell dataKey="firstname" />
+                    </Column>
 
-                <Column width={150}>
-                    <HeaderCell>Last Name</HeaderCell>
-                    <Cell dataKey="lastname" />
-                </Column>
+                    <Column width={150}>
+                        <HeaderCell>Last Name</HeaderCell>
+                        <Cell dataKey="lastname" />
+                    </Column>
+
+                </ColumnGroup>
 
                 <Column width={100}>
                     <HeaderCell>Gender</HeaderCell>
