@@ -2,7 +2,7 @@
     "name": "bright-table",
     "author": "Saroj Regmi",
     "license": "MIT",
-    "version": "0.0.5",
+    "version": "0.0.5-alpha",
     "keywords": [
         "table",
         "react-table",
@@ -10,6 +10,10 @@
         "typescript",
         "javascript"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sarojregmi200/bright-table.git"
+    },
     "description": "A React table library for bright office system.",
     "type": "module",
     "main": "./dist/src/index.js",
