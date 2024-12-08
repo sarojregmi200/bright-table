@@ -93,10 +93,9 @@ const HeaderCell = React.forwardRef(
             onColumnResizeMove,
             onSortColumn,
             renderSortIcon,
-            isDarkMode,
             customizable,
             onHeaderCustomizeClick,
-            isHidden,
+            isHidden = false,
             ...rest
         } = props;
 

@@ -57,15 +57,23 @@ function mergeCells(
             parentId = undefined,
             siblingsIds = [],
             isTree = false,
-            isDarkMode,
+            isDarkMode = false,
             ...nativeCellProps
         } = cells[i].props
+
+        console.log({
+            props: cells[i].props
+        })
 
         // discarding all the non native props
         cells[i] = {
             ...cells[i],
             props: nativeCellProps
         }
+
+        console.log({
+            afterReplaceMent: cells[i].props,
+        })
 
         if (!currentRowId && !isHeaderCell)
             throw new Error("No field with id provided");

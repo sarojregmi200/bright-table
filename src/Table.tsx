@@ -86,11 +86,6 @@ export interface TableProps<Row extends RowDataType, Key extends RowKeyType>
      */
     bordered?: boolean;
 
-    /** specifies if the page is in darkmode or not.
-     * @default false
-     */
-    isDarkMode?: boolean;
-
     /** Display the borders of table cells */
     cellBordered?: boolean;
 
@@ -416,8 +411,6 @@ const Table = React.forwardRef(
             onTouchMove,
             onTouchEnd,
 
-            // newly added features
-            isDarkMode = false,
             rowSelection = false,
             // pagination properties
             pagination,
@@ -839,7 +832,6 @@ const Table = React.forwardRef(
                                 }
                             >
                                 {mergeCells(resetLeftForCells(fixedLeftCells), {
-                                    isDarkMode,
                                     onRowSelect: onRowSelect,
                                     shouldRenderCheckbox: !rtl && rowSelection
                                 })}
@@ -848,7 +840,6 @@ const Table = React.forwardRef(
 
                         <CellGroup>
                             {mergeCells(scrollCells, {
-                                isDarkMode,
                                 leftFixedWidth: fixedLeftCellGroupWidth,
                                 onRowSelect: onRowSelect,
                                 shouldRenderCheckbox: !fixedLeftCellGroupWidth && rowSelection
@@ -870,7 +861,6 @@ const Table = React.forwardRef(
                                     resetLeftForCells(fixedRightCells, hasVerticalScrollbar ? SCROLLBAR_WIDTH : 0),
                                     {
                                         onRowSelect: onRowSelect,
-                                        isDarkMode,
                                         shouldRenderCheckbox: rtl && rowSelection
                                     }
                                 )}
