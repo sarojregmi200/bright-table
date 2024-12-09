@@ -1,8 +1,12 @@
 {
     "name": "bright-table",
-    "author": "Saroj Regmi",
-    "license": "MIT",
     "version": "0.0.5-alpha",
+    "description": "A React table library for bright office system.",
+    "license": "MIT",
+    "author": {
+        "name":"Saroj Regmi",
+        "url":"https://sarojregmi200.com.np"
+    },
     "keywords": [
         "table",
         "react-table",
@@ -14,12 +18,19 @@
         "type": "git",
         "url": "https://github.com/sarojregmi200/bright-table.git"
     },
-    "description": "A React table library for bright office system.",
-    "type": "module",
+    "funding": {
+        "type": "individual",
+        "url": "https://buymeacoffee.com/sarojregmi200"
+    },
 
+    "type": "module",
     "main": "./dist/src/index.js",
+    "exports": {
+        ".": "./dist/src/index.js",
+        "./types": "./types/*.ts"
+    },
+
     "types": "./types/src/index.d.ts",
-    "include": "./types/**/*",
     "files": ["dist/", "types/"],
 
     "scripts": {
@@ -29,16 +40,14 @@
         "dev:docs": "cd docs && bun run dev",
 
         "dev:lib": "vite build --watch",
-        "dev:types": "tsc --watch --emitDeclarationOnly",
+        "dev:types": "tsc --watch --emitDeclarationOnly --force",
 
         "dev": "concurrently \"bun run dev:lib\" \"bun run dev:types\" \"bun run link:package && bun run dev:docs\"",
 
         "build": "vite build && bun run build:types",
         "build:lib": "vite build",
         "build:types": "npx tsc --emitDeclarationOnly",
-        "build:docs": "cd docs && bun run build",
-
-        "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
+        "build:docs": "cd docs && bun run build"
     },
 
     "dependencies": {

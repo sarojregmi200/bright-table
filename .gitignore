@@ -43,3 +43,5 @@ es
 .vscode/
 assets
 yarn.lock
+
+types/

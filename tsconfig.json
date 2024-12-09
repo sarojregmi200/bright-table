@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "./types/",
+    "outDir": "./types",
+    "rootDir": ".",
     "strict": true,
     "declaration": true,
-    "declarationDir": "./types/declarations",
+    "noEmit": false,
+    "declarationDir": "./types",
     "emitDeclarationOnly": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
