@@ -1,7 +1,7 @@
 import { Cell, Column, ColumnGroup, HeaderCell, Table } from "bright-table"
 import { data, mockNestedData, } from "./faker";
 import { useEffect, useState } from "react";
-import { larvelPaginationObject } from "bright-table/types/Pagination.d.ts";
+import { larvelPaginationObject } from "bright-table/types/src/Pagination.d.ts";
 
 function App() {
     const [data, setData] = useState<data[]>([]);
@@ -106,7 +106,7 @@ function App() {
                 }}
             >
                 <Column width={100} align="center" fixed={"left"} >
-                    <HeaderCell >Id</HeaderCell>
+                    <HeaderCell customizable>Id</HeaderCell>
                     <Cell dataKey="id" />
                 </Column>
 

@@ -154,7 +154,7 @@ const HeaderCell = React.forwardRef(
                         align={!groupHeader ? align : undefined}
                         verticalAlign={!groupHeader ? verticalAlign : undefined}
                     >
-                        <div className="wrapper flex items-center justify-between">
+                        <div className="wrapper flex items-center gap-2.5">
                             {children}
                             {renderCustomizeIcon()}
                         </div>

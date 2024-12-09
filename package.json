@@ -1,6 +1,6 @@
 {
     "name": "bright-table",
-    "version": "0.0.5-alpha-2",
+    "version": "0.0.5-alpha-3",
     "description": "A React table library for bright office system.",
     "license": "MIT",
     "author": {
@@ -27,7 +27,7 @@
     "exports": {
         ".": {
             "import": "./dist/src/index.js",
-            "types": "./types/index.d.ts"
+            "types": "./types/src/index.d.ts"
         },
         "./types/*": {
             "import": "./types/*"
@@ -44,8 +44,8 @@
         "link:package": "bun link && cd docs && bun link bright-table",
         "dev:docs": "cd docs && bun run dev",
         "dev:lib": "vite build --watch",
-        "dev:types": "tsc --watch --emitDeclarationOnly --force",
-        "dev": "concurrently \"bun run dev:lib\" \"bun run dev:types\" \"bun run link:package && bun run dev:docs\"",
+        "dev:types": "npx tsc --watch --emitDeclarationOnly",
+        "dev": "concurrently \"bun run dev:lib\" \"bun run dev:types\"  \" bun run link:package && bun run dev:docs\"",
         "build": "vite build && bun run build:types",
         "build:lib": "vite build",
         "build:types": "npx tsc --emitDeclarationOnly",
@@ -58,11 +58,13 @@
         "lodash": "^4.17.21",
         "react-is": "^17.0.2"
     },
+
     "peerDependencies": {
         "prop-types": "^15.7.2",
-        "react": ">=16.8.0",
-        "react-dom": ">=16.8.0"
+        "react": "^16.8.0 || ^17 || ^18 || ^19",
+        "react-dom": "^16.8.0 || ^17 || ^18 || ^19"
     },
+
     "devDependencies": {
         "@commitlint/cli": "^13.1.0",
         "@commitlint/config-conventional": "^13.1.0",
