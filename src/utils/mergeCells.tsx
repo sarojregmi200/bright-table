@@ -62,7 +62,6 @@ function mergeCells(
             parentId = undefined,
             siblingsIds = [],
             isTree = false,
-            isDarkMode = false,
             ...nativeCellProps
         } = cells[i].props
 
