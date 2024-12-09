@@ -21,6 +21,11 @@ export interface ColumnGroupProps extends StandardProps {
     header?: React.ReactNode;
     width?: number;
     headerHeight?: number;
+
+    /**
+     * @inner internal use only
+     */
+    rowSelectionWidth?: number;
 }
 
 const ColumnGroup = React.forwardRef((props: ColumnGroupProps, ref: React.Ref<HTMLDivElement>) => {
@@ -34,6 +39,7 @@ const ColumnGroup = React.forwardRef((props: ColumnGroupProps, ref: React.Ref<HT
         align,
         width,
         groupHeaderHeight: groupHeightProp,
+        rowSelectionWidth,
         ...rest
     } = props;
 
@@ -46,15 +52,20 @@ const ColumnGroup = React.forwardRef((props: ColumnGroupProps, ref: React.Ref<HT
         width
     };
 
+
     const { withClassPrefix, merge, prefix } = useClassNames(classPrefix);
     const classes = merge(className, withClassPrefix());
     const contentStyles = {
         ...convertToFlex({ verticalAlign, align }),
-        ...styles
+        ...styles,
     };
 
     return (
-        <div ref={ref} className={classes} {...rest}>
+        <div
+            ref={ref}
+            className={classes} {...rest}
+            style={{ left: rowSelectionWidth }}
+        >
             <div className={prefix('header')} style={styles}>
                 <div className={prefix('header-content')} style={contentStyles}>
                     {header}

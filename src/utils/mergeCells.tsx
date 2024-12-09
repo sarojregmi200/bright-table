@@ -6,6 +6,7 @@ import ColumnGroup from '../ColumnGroup';
 import HeaderCell from '../HeaderCell';
 import SelectionCheckbox from '../components/SelectionCheckbox';
 import { rowSelectionState } from './useRowSelection';
+import { ROW_SELECTION_COL_WIDTH } from './useTableDimension';
 
 function cloneCell(Cell, props) {
     return React.cloneElement(Cell, props);
@@ -18,6 +19,7 @@ function mergeCells(
     props: (Record<"shouldRenderCheckbox" | string, any>) & {
         onRowSelect?: (state: rowSelectionState) => void,
         leftFixedWidth?: number
+        rowSelection?: boolean
     }
 ) {
     const nextCells: React.ReactNode[] = [];
@@ -25,8 +27,11 @@ function mergeCells(
         shouldRenderCheckbox: shouldRowRenderCheckbox = false,
         onRowSelect,
         leftFixedWidth = 0,
+        rowSelection = false,
         ...additionalProps
     } = props;
+
+    const rowSelectionWidth = rowSelection ? ROW_SELECTION_COL_WIDTH : 0;
 
     let checkboxCol = false;
 
@@ -61,19 +66,11 @@ function mergeCells(
             ...nativeCellProps
         } = cells[i].props
 
-        console.log({
-            props: cells[i].props
-        })
-
         // discarding all the non native props
         cells[i] = {
             ...cells[i],
             props: nativeCellProps
         }
-
-        console.log({
-            afterReplaceMent: cells[i].props,
-        })
 
         if (!currentRowId && !isHeaderCell)
             throw new Error("No field with id provided");
@@ -118,7 +115,8 @@ function mergeCells(
         // header cells
         if (groupCount && isHeaderCell) {
             let nextWidth = width;
-            let left = shouldRowRenderCheckbox ? CHECKBOX_WIDTH : 0;
+            let left = 0;
+
             for (let j = 0; j < groupCount; j += 1) {
                 const nextCell = cells[i + j];
                 const {
@@ -143,7 +141,6 @@ function mergeCells(
                 groupChildren.push(
                     <HeaderCell
                         key={j}
-                        left={left}
                         align={align}
                         verticalAlign={verticalAlign}
                         dataKey={dataKey}
@@ -165,6 +162,7 @@ function mergeCells(
                     width: nextWidth,
                     children: (
                         <ColumnGroup
+                            rowSelectionWidth={rowSelectionWidth}
                             width={nextWidth}
                             headerHeight={headerHeight}
                             header={groupHeader}
@@ -217,7 +215,7 @@ function mergeCells(
                     width: nextWidth,
                     left: shouldRowRenderCheckbox
                         ? cells[i].props.left + CHECKBOX_WIDTH + leftFixedWidth
-                        : cells[i].props.left,
+                        : cells[i].props.left + rowSelectionWidth,
                     'aria-colspan': nextWidth > width ? colSpan : undefined,
                     ...additionalProps
                 })
@@ -231,7 +229,7 @@ function mergeCells(
             cloneCell(cells[i], {
                 left: shouldRowRenderCheckbox
                     ? cells[i]?.props?.left + CHECKBOX_WIDTH + leftFixedWidth
-                    : cells[i]?.props?.left,
+                    : cells[i]?.props?.left + rowSelectionWidth,
                 ...additionalProps
             }));
     }

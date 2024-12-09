@@ -17,6 +17,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
+
+    /* Referencing the bright table */
+    "paths": {
+        "bright-table": ["./node_modules/bright-table/dist/types/"]
+    }
   },
   "include": ["vite.config.ts"]
 }

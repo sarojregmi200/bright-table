@@ -777,7 +777,6 @@ const Table = React.forwardRef(
                 rowStyles.right = rowRight;
             }
 
-
             let rowNode: React.ReactNode = null;
 
             // IF there are fixed columns, add a fixed group
@@ -816,8 +815,6 @@ const Table = React.forwardRef(
                     fixedRightCellGroupWidth += SCROLLBAR_WIDTH;
                 }
 
-
-
                 rowNode = (
                     <>
                         {fixedLeftCellGroupWidth ? (
@@ -832,6 +829,7 @@ const Table = React.forwardRef(
                                 }
                             >
                                 {mergeCells(resetLeftForCells(fixedLeftCells), {
+                                    rowSelection,
                                     onRowSelect: onRowSelect,
                                     shouldRenderCheckbox: !rtl && rowSelection
                                 })}
@@ -842,7 +840,8 @@ const Table = React.forwardRef(
                             {mergeCells(scrollCells, {
                                 leftFixedWidth: fixedLeftCellGroupWidth,
                                 onRowSelect: onRowSelect,
-                                shouldRenderCheckbox: !fixedLeftCellGroupWidth && rowSelection
+                                shouldRenderCheckbox: !fixedLeftCellGroupWidth && rowSelection,
+                                rowSelection
                             })}
                         </CellGroup>
 
@@ -860,6 +859,7 @@ const Table = React.forwardRef(
                                 {mergeCells(
                                     resetLeftForCells(fixedRightCells, hasVerticalScrollbar ? SCROLLBAR_WIDTH : 0),
                                     {
+                                        rowSelection,
                                         onRowSelect: onRowSelect,
                                         shouldRenderCheckbox: rtl && rowSelection
                                     }
@@ -875,6 +875,7 @@ const Table = React.forwardRef(
                     <>
                         <CellGroup>
                             {mergeCells(cells, {
+                                rowSelection,
                                 onRowSelect: onRowSelect,
                                 shouldRenderCheckbox: rowSelection
                             })}
@@ -1277,7 +1278,8 @@ const Table = React.forwardRef(
                 translateDOMPositionXY: translateDOMPositionXY.current,
                 rtl,
                 isTree,
-                hasCustomTreeCol
+                hasCustomTreeCol,
+                rowSelection: props.rowSelection
             }),
             [classPrefix, hasCustomTreeCol, isTree, rtl]
         );

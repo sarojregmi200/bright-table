@@ -209,7 +209,7 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         const row = table?.querySelector(`.${prefix('row')}:not(.virtualized)`);
         const nextContentWidth = row ? getWidth(row) : 0;
 
-        // Whether to show the horizontal scroll bar
+        // Accounting for the width of the scroll bar if present.
         const hasHorizontalScrollbar = contentWidth.current > tableWidth.current;
         const scrollbarWidth = hasHorizontalScrollbar ? 0 : SCROLLBAR_WIDTH;
 

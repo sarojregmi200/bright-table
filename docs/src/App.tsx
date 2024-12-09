@@ -1,17 +1,15 @@
-import { Cell, Column, ColumnGroup, HeaderCell, Table } from "../../dist/src/index"
+import { Cell, Column, ColumnGroup, HeaderCell, Table } from "bright-table"
 import { data, mockNestedData, } from "./faker";
 import { useEffect, useState } from "react";
-import { larvelPaginationObject } from "../../dist/types/src/Pagination";
+import { larvelPaginationObject } from "bright-table/dist/types/src/Pagination";
 
 function App() {
     const [data, setData] = useState<data[]>([]);
     const [loading, setLoading] = useState(true);
     const [pin, setPin] = useState(false);
 
-    console.log(pin)
-
     useEffect(() => {
-        const data = mockNestedData(10);
+        const data = mockNestedData(101);
         setData(data);
         setLoading(false);
     }, []);
@@ -85,6 +83,7 @@ function App() {
         <div>
             <Table
                 rowSelection
+                headerHeight={80}
                 isTree
                 rowKey={"id"}
                 pagination={{
@@ -106,7 +105,7 @@ function App() {
                     console.log(rowData);
                 }}
             >
-                <Column width={60} align="center" fixed={"left"} >
+                <Column width={100} align="center" fixed={"left"} >
                     <HeaderCell >Id</HeaderCell>
                     <Cell dataKey="id" />
                 </Column>

@@ -78,6 +78,7 @@ export default defineConfig({
         preserveModules: true,
         entryFileNames: '[name].js',
         dir: 'dist',
+        emptyOutDir: false,
         exports: 'named',
       }
     },
