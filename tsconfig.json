@@ -5,7 +5,7 @@
     "strict": true,
     "declaration": true,
     "noEmit": false,
-    "declarationDir": "./types",
+    "declarationDir": "./types/des",
     "emitDeclarationOnly": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
