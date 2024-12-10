@@ -38,7 +38,6 @@ interface TableDimensionProps<Row, Key> {
 
     // additional height/width may be added if present.
     hasRowSelection?: boolean;
-    hasPagination?: boolean;
 }
 
 // 2px is for the border to be display; 
@@ -203,11 +202,12 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
     }, [affixHeader, affixHorizontalScrollbar, headerWrapperRef, tableRef]);
 
     const calculateTableContentWidth = useCallback(() => {
-        const prevWidth = contentWidth.current;
-        const prevColumnCount = columnCount.current;
-        const table = tableRef?.current;
-        const row = table?.querySelector(`.${prefix('row')}:not(.virtualized)`);
-        const nextContentWidth = row ? getWidth(row) : 0;
+        const prevWidth = contentWidth.current; //0
+        const prevColumnCount = columnCount.current; //0
+        const table = tableRef?.current; //undefined
+        const row = table?.querySelector(`.${prefix('row')}:not(.virtualized)`); //undefined
+
+        let nextContentWidth = row ? getWidth(row) : 0;
 
         // Accounting for the width of the scroll bar if present.
         const hasHorizontalScrollbar = contentWidth.current > tableWidth.current;
@@ -279,8 +279,11 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
     );
 
     useMount(() => {
+        // TODO: fix the calculations that are not working properly and causing 
+        // being content hiddden.
         calculateTableContextHeight();
         calculateTableContentWidth();
+
         calculateTableWidth();
         calculateTableHeight();
         setOffsetByAffix();

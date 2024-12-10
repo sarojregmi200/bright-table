@@ -33,7 +33,8 @@ export type TreeTableCheckbox = {
 export type SelectionCheckboxProps = HeaderCheckbox | NormalRowCheckbox | TreeTableCheckbox;
 
 const SelectionCheckbox = memo((selectionCheckboxProps: SelectionCheckboxProps) => {
-    const { onRowSelect,
+    const {
+        onRowSelect,
         currentRowId,
         variant,
         ...specificProps } = selectionCheckboxProps;
@@ -84,7 +85,7 @@ const SelectionCheckbox = memo((selectionCheckboxProps: SelectionCheckboxProps) 
 
 
     if (variants.isHeader)
-        (cellProps as any).height = specificProps?.headerHeight;
+        (cellProps as any).height = (specificProps as any)?.headerHeight;
 
     let isChecked = getRowSelectedStatus({
         variants,

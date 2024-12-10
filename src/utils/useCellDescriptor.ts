@@ -14,6 +14,7 @@ import useUpdateEffect from './useUpdateEffect';
 import { ColumnProps } from '../Column';
 import flushSync from './flushSync';
 import useMount from './useMount';
+import { ROW_SELECTION_COL_WIDTH } from './useTableDimension';
 
 interface CellDescriptorProps<Row> {
     children: React.ReactNode[];
@@ -32,6 +33,7 @@ interface CellDescriptorProps<Row> {
     rowHeight?: number | ((rowData?: Row) => number);
     mouseAreaRef: React.RefObject<HTMLDivElement>;
     tableRef: React.RefObject<HTMLDivElement>;
+    hasRowSelection: boolean;
 }
 
 interface CellDescriptor {
@@ -198,7 +200,6 @@ const useCellDescriptor = <Row extends RowDataType>(
     const { totalFlexGrow, totalWidth } = getTotalByColumns<Row>(columns);
 
     const extractCellInfo = (column: React.ReactElement<ColumnProps<Row>>, index: number, ignorePinCheck = false) => {
-
         if (!React.isValidElement(column))
             return
 
@@ -359,7 +360,7 @@ const useCellDescriptor = <Row extends RowDataType>(
         columns,
         headerCells,
         bodyCells,
-        allColumnsWidth: left,
+        allColumnsWidth: left + (props.hasRowSelection ? ROW_SELECTION_COL_WIDTH : 0),
         hasCustomTreeCol
     };
 

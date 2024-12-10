@@ -54,7 +54,6 @@ const ColumnGroup = React.forwardRef((props: ColumnGroupProps, ref: React.Ref<HT
 
     const { withClassPrefix, merge, prefix } = useClassNames(classPrefix);
     const classes = merge(className, withClassPrefix());
-    console.log(classes)
     const contentStyles = {
         ...convertToFlex({ verticalAlign, align }),
         ...styles,

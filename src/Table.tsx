@@ -547,9 +547,8 @@ const Table = React.forwardRef(
             expandedRowKeys,
             showHeader,
             onTableScroll: debounce((coords: { x?: number; y?: number }) => onScrollTo(coords), 100),
-            onTableResizeChange: handleTableResizeChange
+            onTableResizeChange: handleTableResizeChange,
         });
-
 
         useAffix({
             getTableHeight,
@@ -639,7 +638,8 @@ const Table = React.forwardRef(
 
             // Force table update after column width change, so scrollbar re-renders.
             onHeaderCellResize: forceUpdate,
-            rowHeight
+            rowHeight,
+            hasRowSelection: rowSelection
         });
 
         const colCounts = useRef(headerCells?.length || 0);
