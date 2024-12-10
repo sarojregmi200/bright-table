@@ -121,10 +121,8 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
 
         // After setting the affixHeader property, the height of the two headers should be subtracted.
         contentHeight.current = Math.round(
-            nextContentHeight - (affixHeader ? headerHeight * 2 : headerHeight)
+            nextContentHeight - (affixHeader ? headerHeight * 2 : 0)
         );
-
-        contentHeight.current = 4646;
 
         // Whether to show the horizontal scroll bar
         const hasHorizontalScrollbar = contentWidth.current > tableWidth.current;
@@ -132,8 +130,6 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         const height = fillHeight ? tableHeight.current : Math.max(props.height, maxHeight || 0);
         let tableBodyHeight = height;
 
-        if (showHeader)
-            tableBodyHeight = height - headerHeight;
 
         if (!autoHeight) {
             /**
@@ -141,7 +137,9 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
              *  But it will only be calculated when there is a horizontal scroll bar (contentWidth > tableWidth).
              */
             minScrollY.current =
-                -(nextContentHeight - tableBodyHeight) - (hasHorizontalScrollbar ? SCROLLBAR_WIDTH : 0);
+                -(nextContentHeight - height)
+                - (hasHorizontalScrollbar ? SCROLLBAR_WIDTH : 0)
+                - (hasPagination ? PAGINATION_HEIGHT : 0);
         }
 
         // If the height of the content area is less than the height of the table, the vertical scroll bar is reset.

@@ -145,11 +145,6 @@ const useScrollListener = (props: ScrollListenerProps) => {
                 return false;
             }
 
-            console.log({
-                scrollY: scrollY.current,
-                minScrollY: minScrollY.current
-            })
-
             if (typeof scrollY.current === 'number' && typeof minScrollY.current === 'number') {
                 return (
                     (delta >= 0 && scrollY.current > minScrollY.current) || (delta < 0 && scrollY.current < 0)
