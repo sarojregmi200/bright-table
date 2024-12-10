@@ -130,6 +130,8 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
         const height = fillHeight ? tableHeight.current : Math.max(props.height, maxHeight || 0);
         let tableBodyHeight = height;
 
+        if (showHeader)
+            tableBodyHeight = height - (headerHeight);
 
         if (!autoHeight) {
             /**
@@ -137,7 +139,7 @@ const useTableDimension = <Row extends RowDataType, Key>(props: TableDimensionPr
              *  But it will only be calculated when there is a horizontal scroll bar (contentWidth > tableWidth).
              */
             minScrollY.current =
-                -(nextContentHeight - height)
+                -(nextContentHeight - tableBodyHeight)
                 - (hasHorizontalScrollbar ? SCROLLBAR_WIDTH : 0)
                 - (hasPagination ? PAGINATION_HEIGHT : 0);
         }
