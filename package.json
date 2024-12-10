@@ -45,7 +45,7 @@
         "dev:docs": "cd docs && bun run dev",
         "dev:lib": "vite build --watch",
         "dev:types": "npx tsc --watch --emitDeclarationOnly",
-        "dev": "concurrently \"bun run dev:lib\" \"bun run dev:types\"  \" bun run link:package && bun run dev:docs\"",
+        "dev": "concurrently \"bun run dev:lib\" \"bun run dev:types\"  \" bun run link:package && bun run dev:docs\" -c \"blue,green,yellow\" -n \"lib,types,docs\"",
         "build": "vite build && bun run build:types",
         "build:lib": "vite build",
         "build:types": "npx tsc --emitDeclarationOnly",

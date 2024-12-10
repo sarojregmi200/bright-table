@@ -139,6 +139,7 @@ function mergeCells(
 
                 groupChildren.push(
                     <HeaderCell
+                        left={left}
                         key={j}
                         align={align}
                         verticalAlign={verticalAlign}
@@ -156,12 +157,14 @@ function mergeCells(
                 );
             }
 
+
             nextCells.push(
                 cloneCell(cells[i], {
                     width: nextWidth,
+                    left: rowSelectionWidth + cells[i].props.left,
                     children: (
                         <ColumnGroup
-                            rowSelectionWidth={rowSelectionWidth}
+                            rowSelectionWidth={0}
                             width={nextWidth}
                             headerHeight={headerHeight}
                             header={groupHeader}

@@ -49,12 +49,12 @@ const ColumnGroup = React.forwardRef((props: ColumnGroupProps, ref: React.Ref<HT
 
     const styles: React.CSSProperties = {
         height: groupHeight,
-        width
+        width,
     };
-
 
     const { withClassPrefix, merge, prefix } = useClassNames(classPrefix);
     const classes = merge(className, withClassPrefix());
+    console.log(classes)
     const contentStyles = {
         ...convertToFlex({ verticalAlign, align }),
         ...styles,
@@ -63,10 +63,13 @@ const ColumnGroup = React.forwardRef((props: ColumnGroupProps, ref: React.Ref<HT
     return (
         <div
             ref={ref}
-            className={classes} {...rest}
-            style={{ left: rowSelectionWidth }}
+            className={classes}
+            {...rest}
         >
-            <div className={prefix('header')} style={styles}>
+            <div className={prefix('header')} style={{
+                left: rowSelectionWidth,
+                ...styles
+            }}>
                 <div className={prefix('header-content')} style={contentStyles}>
                     {header}
                 </div>
