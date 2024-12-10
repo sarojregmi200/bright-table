@@ -300,7 +300,6 @@ const useCellDescriptor = <Row extends RowDataType>(
             uniqueKey = `un-${index}`;
         }
 
-
         const cellProps = {
             ...omit(columnProps, ['children']),
             'aria-colindex': index + 1,
