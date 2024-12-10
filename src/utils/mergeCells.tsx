@@ -83,6 +83,7 @@ function mergeCells(
                         onRowSelect={onRowSelect}
                         isHeaderCell={true}
                         index={i}
+                        headerHeight={headerHeight}
                     />)
 
 

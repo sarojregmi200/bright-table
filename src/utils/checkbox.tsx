@@ -16,7 +16,7 @@ const CheckBox = ({ active, className, onClick, ...rest }: checkBoxProps) => {
         />
 
         <div
-            className={cn("cursor-pointer absolute inset-0", className)}
+            className={cn("cursor-pointer absolute inset-0 flex items-center justify-center", className)}
             onClick={(e) => { onClick(e) }} >
             {active
                 ? <Icon name="checkedCheckbox" className="h-[18px]" />

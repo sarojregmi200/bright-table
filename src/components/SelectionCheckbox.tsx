@@ -2,6 +2,7 @@ import React, { MouseEvent, memo } from 'react';
 import Cell from '../Cell';
 import CheckBox from '../utils/checkbox';
 import { rowSelectionState, useRowSelection } from '../utils/useRowSelection';
+import { ROW_SELECTION_COL_WIDTH } from '../utils/useTableDimension';
 
 export type BaseCheckboxProps = {
     index: number;
@@ -12,6 +13,7 @@ export type HeaderCheckbox = {
     variant: 'header';
     isHeaderCell: true;
     currentRowId?: never;
+    headerHeight: number;
 } & BaseCheckboxProps
 
 export type NormalRowCheckbox = {
@@ -31,7 +33,10 @@ export type TreeTableCheckbox = {
 export type SelectionCheckboxProps = HeaderCheckbox | NormalRowCheckbox | TreeTableCheckbox;
 
 const SelectionCheckbox = memo((selectionCheckboxProps: SelectionCheckboxProps) => {
-    const { onRowSelect, currentRowId, variant, ...specificProps } = selectionCheckboxProps;
+    const { onRowSelect,
+        currentRowId,
+        variant,
+        ...specificProps } = selectionCheckboxProps;
 
     const {
         handleNormalSelection,
@@ -71,11 +76,15 @@ const SelectionCheckbox = memo((selectionCheckboxProps: SelectionCheckboxProps) 
     };
 
     const cellProps = {
-        width: 50,
+        width: ROW_SELECTION_COL_WIDTH - 2,
         left: 0,
         className: 'grid place-items-center group',
         onClick: handleRowSelection,
     };
+
+
+    if (variants.isHeader)
+        (cellProps as any).height = specificProps?.headerHeight;
 
     let isChecked = getRowSelectedStatus({
         variants,
@@ -86,7 +95,6 @@ const SelectionCheckbox = memo((selectionCheckboxProps: SelectionCheckboxProps) 
         <Cell {...cellProps}>
             <CheckBox
                 active={isChecked}
-                className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
                 onClick={handleRowSelection}
             />
         </Cell>
