@@ -2,6 +2,7 @@ import { Cell, Column, ColumnGroup, HeaderCell, Table } from "bright-table"
 import { data, mockNestedData, } from "./faker";
 import { useEffect, useState } from "react";
 import { larvelPaginationObject } from "bright-table/types/src/Pagination.d.ts";
+import StyleGuide from "./styleGuide";
 
 function App() {
     const [data, setData] = useState<data[]>([]);
@@ -80,7 +81,8 @@ function App() {
     }
 
     return (
-        <div>
+        <div className="p-10">
+
             <Table
                 rowSelection
                 headerHeight={80}
@@ -100,7 +102,7 @@ function App() {
                 shouldUpdateScroll={false}
                 data={data}
                 cellBordered
-                height={innerHeight}
+                height={innerHeight - 200}
                 onRowClick={rowData => {
                     console.log(rowData);
                 }}
@@ -123,27 +125,12 @@ function App() {
 
                 </ColumnGroup>
 
-                <Column width={100}>
-                    <HeaderCell>Gender</HeaderCell>
-                    <Cell dataKey="gender" />
-                </Column>
-
-                <Column width={100}>
-                    <HeaderCell>Age</HeaderCell>
-                    <Cell dataKey="age" />
-                </Column>
-
-                <Column width={150}>
-                    <HeaderCell>Postcode</HeaderCell>
-                    <Cell dataKey="postcode" />
-                </Column>
-
-                <Column width={300}>
+                <Column width={300} flexGrow={1}>
                     <HeaderCell>Email</HeaderCell>
                     <Cell dataKey="email" />
                 </Column>
 
-                <Column flexGrow={1}>
+                <Column>
                     <HeaderCell>...</HeaderCell>
                     <Cell style={{ padding: '6px' }}>
                         {rowData => (
@@ -156,11 +143,7 @@ function App() {
 
             </Table>
 
-            <div className="pincol">
-                <button onClick={() => { setPin(prev => !prev) }}>
-                    pincol
-                </button>
-            </div>
+            <StyleGuide />
         </div>
     )
 }

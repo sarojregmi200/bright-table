@@ -6,8 +6,6 @@ import { get } from "lodash";
 import { LAYER_WIDTH, ROW_HEADER_HEIGHT, ROW_HEIGHT } from './constants';
 import { useClassNames, convertToFlex } from './utils';
 import TableContext from './TableContext';
-import ArrowRight from '@rsuite/icons/ArrowRight';
-import ArrowDown from '@rsuite/icons/ArrowDown';
 import { StandardProps, RowDataType, RowKeyType } from './@types/common';
 import { columnHandledProps } from './Column';
 import { cn } from './tailwind/twMerge';
@@ -171,26 +169,44 @@ const Cell = React.forwardRef(
             cellContent = children;
         }
 
+        const ExpandedIcon = <svg
+            width="100%"
+            height="100%"
+            className="-rotate-90 text-[var(--bg-bt-expand-icon)] hover:text-[var(--bg-bt-expand-icon)]"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M9.85031 14.2932C11.4784 14.5437 15.5131 9.82024 17.5581 7.27144C18.074 6.62843 17.6108 5.69724 16.7864 5.69724L3.25537 5.69728C2.42339 5.69728 1.96363 6.64709 2.49235 7.28946C4.48139 9.70602 8.25044 14.0471 9.85031 14.2932Z"
+                fill="currentColor" />
+        </svg>
+
+        const CollapsedIcon = <svg
+            width="100%"
+            height="100%"
+            className="-rotate-90 text-[var(--bg-bt-expand-icon)]  hover:text-[var(--bg-bt-expand-icon)]"
+            viewBox="0 0 20 20"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M9.85031 14.2932C11.4784 14.5437 15.5131 9.82024 17.5581 7.27144C18.074 6.62843 17.6108 5.69724 16.7864 5.69724L3.25537 5.69728C2.42339 5.69728 1.96363 6.64709 2.49235 7.28946C4.48139 9.70602 8.25044 14.0471 9.85031 14.2932Z" fill="currentColor" />
+        </svg>
+
         const renderTreeNodeExpandIcon = () => {
-            const ExpandIconComponent = expanded ? ArrowDown : ArrowRight;
-            const expandButton = <ExpandIconComponent className={prefix('expand-icon')} />;
+            const ExpandIconComponent = expanded ? ExpandedIcon : CollapsedIcon;
 
             if (isTreeCol && hasChildren) {
                 return (
                     <span
                         role="button"
                         tabIndex={-1}
-                        className={prefix('expand-wrapper')}
+                        className={cn(`bg-[var(--bg-bt-expand-icon-con)] hover:bg-[var(--bg-bt-expand-icon-con-hover)] w-5 h-5 p-1 flex items-center justify-center rounded-sm`)}
                         onClick={handleTreeToggle}>
-                        {renderTreeToggle ?
-                            renderTreeToggle(expandButton, rowData, expanded)
-                            : expandButton}
+                        {ExpandIconComponent}
                     </span>
                 );
             }
 
             return <span className='w-6'>
-
             </span>;
         };
 
@@ -198,7 +214,7 @@ const Cell = React.forwardRef(
             <div className={prefix('wrap')}>
                 {renderTreeNodeExpandIcon()}
                 {renderCell ? renderCell(cellContent) : cellContent}
-            </div>
+            </div >
         ) : (
             <>
                 {renderTreeNodeExpandIcon()}
@@ -210,21 +226,26 @@ const Cell = React.forwardRef(
 
         const isEven = rowIndex && (rowIndex + 1) % 2 === 0;
 
-        const headerStyles = `bg-[var(--bg-header)]`;
-        const oddRowStyles = `bg-[var(--bg-odd)]`;
-        const evenRowStyles = `bg-[var(--bg-even)]`;
+        const headerColors = `bg-[var(--bg-bt-header)] text-[var(--fg-bt-header)]`;
+        const oddRowColors = `bg-[var(--bg-bt-odd)] text-[var(--fg-bt-odd)]`;
+        const evenRowColors = `bg-[var(--bg-bt-even)] text-[var(--fg-bt-even)]`;
+        const treeColColors = `bg-[var(--bg-bt-tree-col)] text-[var(--fg-bt-tree-col)] cursor-pointer`;
 
         return (
             <div
                 ref={ref}
                 role={isHeaderCell ? 'columnheader' : 'gridcell'}
                 {...omit(rest, [...groupKeys, ...columnHandledProps])}
-                onClick={onClick}
+                onClick={(e) => {
+                    onClick?.(e);
+                    isTreeCol && hasChildren && handleTreeToggle?.(e);
+                }}
                 className={cn({
                     [classes]: true,
-                    [headerStyles]: isHeaderCell,
-                    [oddRowStyles]: !isHeaderCell && (!isEven),
-                    [evenRowStyles]: !isHeaderCell && (isEven),
+                    [headerColors]: isHeaderCell,
+                    [oddRowColors]: !isHeaderCell && (!isEven),
+                    [evenRowColors]: !isHeaderCell && (isEven),
+                    [treeColColors]: isTreeCol && hasChildren,
                 })
                 }
                 style={styles}>

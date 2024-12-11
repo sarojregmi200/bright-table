@@ -5,6 +5,7 @@ import { FixedType } from './ColumnResizeHandler';
 import { useUpdateEffect, useClassNames } from './utils';
 import Cell, { InnerCellProps } from './Cell';
 import { RowDataType, RowKeyType } from './@types/common';
+import { cn } from './tailwind/twMerge';
 
 export interface HeaderCellProps<Row extends RowDataType, Key extends RowKeyType>
     extends Omit<InnerCellProps<Row, Key>, 'onResize'> {
@@ -142,7 +143,7 @@ const HeaderCell = React.forwardRef(
 
         if (!isHidden)
             return (
-                <div ref={ref} className={classes}>
+                <div ref={ref} className={cn(classes)}>
                     <Cell
                         aria-sort={ariaSort}
                         {...rest}

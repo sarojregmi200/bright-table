@@ -1320,7 +1320,7 @@ const Table = React.forwardRef(
                         />
 
                         <div
-                            className='bt-wrapper relative border border-[var(--border-color)]'
+                            className='bt-wrapper relative border border-[var(--border-color)] rounded-md'
                             style={{
                                 width: styles.width,
                                 height: TableHeightWithPagination,
@@ -1355,7 +1355,7 @@ const Table = React.forwardRef(
                         </div>
                     </div>
                 </TableContext.Provider>
-            </RowSelectionWrapper >
+            </RowSelectionWrapper>
         );
     }
 );
