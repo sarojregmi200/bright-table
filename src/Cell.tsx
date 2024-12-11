@@ -181,14 +181,17 @@ const Cell = React.forwardRef(
                         role="button"
                         tabIndex={-1}
                         className={prefix('expand-wrapper')}
-                        onClick={handleTreeToggle}
-                    >
-                        {renderTreeToggle ? renderTreeToggle(expandButton, rowData, expanded) : expandButton}
+                        onClick={handleTreeToggle}>
+                        {renderTreeToggle ?
+                            renderTreeToggle(expandButton, rowData, expanded)
+                            : expandButton}
                     </span>
                 );
             }
 
-            return null;
+            return <span className='w-6'>
+
+            </span>;
         };
 
         const content = wordWrap ? (
@@ -203,20 +206,13 @@ const Cell = React.forwardRef(
             </>
         );
 
-        if (removed) {
-            return null;
-        }
+        if (removed) return null;
 
         const isEven = rowIndex && (rowIndex + 1) % 2 === 0;
-        type htmlStyleAttr = React.HTMLAttributes<HTMLDivElement>["style"] | undefined;
 
-        const evenRowStyle: htmlStyleAttr = {
-            backgroundColor: "#F9FCFF"
-        }
-
-        const oddRowStyle: htmlStyleAttr = {
-            backgroundColor: "#fffff"
-        }
+        const headerStyles = `bg-[var(--bg-header)]`;
+        const oddRowStyles = `bg-[var(--bg-odd)]`;
+        const evenRowStyles = `bg-[var(--bg-even)]`;
 
         return (
             <div
@@ -224,12 +220,15 @@ const Cell = React.forwardRef(
                 role={isHeaderCell ? 'columnheader' : 'gridcell'}
                 {...omit(rest, [...groupKeys, ...columnHandledProps])}
                 onClick={onClick}
-                className={cn(classes, "")}
-                style={{
-                    ...styles,
-                    ...(!isHeaderCell ? (isEven ? evenRowStyle : oddRowStyle) : {})
-                }}
-            >
+                className={cn({
+                    [classes]: true,
+                    [headerStyles]: isHeaderCell,
+                    [oddRowStyles]: !isHeaderCell && (!isEven),
+                    [evenRowStyles]: !isHeaderCell && (isEven),
+                })
+                }
+                style={styles}>
+
                 <div className={cn(prefix('content'), "")} style={contentStyles}>
                     {content}
                 </div>
